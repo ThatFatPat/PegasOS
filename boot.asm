@@ -47,12 +47,12 @@ cleanup:
     add sp, 2
 
 switch_mode_16_to_32:
-    cli ; Disable interrupts
-    lgdt [gdt_descriptor]
+    cli ; Disable Interrupts
+    lgdt [gdt_descriptor] ; Load GDT
     mov eax, cr0
     or eax, 0x1
-    mov cr0, eax
-    jmp CODE_SEG:init_protected_mode
+    mov cr0, eax ; Enable Protected Mode
+    jmp CODE_SEG:init_protected_mode ; Far jump to clear icache
 
 fallback:
     hlt
