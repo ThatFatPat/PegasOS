@@ -10,19 +10,20 @@ print32_string:
     push ecx
     push edx
     test edx, edx
-    jne print32_string_loop
+    jne .print32_string_loop
     mov edx, VIDEO_MEMORY
-print32_string_loop:
+
+.print32_string_loop:
         mov al, BYTE [ebx] ; The current character
         mov ah, STDCOLOR
         test ecx, ecx
-        jz end_print32_string
+        jz .end_print32_string
         mov WORD [edx], ax
         add edx, 0x2
         inc ebx
-        dec ecx
-        jmp print32_string_loop
-end_print32_string:
+        loop .print32_string_loop
+        
+.end_print32_string:
     pop edx
     pop ecx
     pop ebx
