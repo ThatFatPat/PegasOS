@@ -36,16 +36,9 @@ print_string:
 print_newline:
     push bx
     push dx
-    push ax
     lea bx, [newline]
     mov dx, 0x0
     call print_string
-    mov ah, 0x3 ; Get current cursor position
-    int 0x10 
-    mov ah, 0x2
-    mov dl, 0x0 ; Set column to 0. (Line is automatic after \n)
-    int 0x10
-    pop ax
     pop bx
     pop dx
     ret
@@ -105,4 +98,4 @@ print_hex:
 
 ; global variables
 HEX_OUT: db '0x0000',0
-newline: db 0xa, 0
+newline: db 0xa,0xd, 0
