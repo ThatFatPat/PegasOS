@@ -2,56 +2,60 @@ org 0x7c00
 
 xor bx, bx
 mov ss, bx
-mov bp, 0x8000
-mov sp, bp
+mov sp, 0x8000 ; Moving directly to bp results 0xffff8000
 
-push dx ; dl = [bp]
-mov ah, 0x0e ; AH - Video command
-xor bx, bx ; BH = Page Number, BL = Color
-lea bp, [str]
-print_loop:
-    mov al, [bp] ; The current character
-    test al, al
-    jz end_print_loop
-    int 0x10
-    inc bp
-    jmp print_loop
+push dx ; dl = [bp - 1]
 
-end_print_loop:
-    mov al, [bp - 1]
-    add al, '0'
-    int 0x10
+print_drive:
+    lea bx, [booted_from_drive_string]
+    mov dx, 0x12
+    call print_string
+    mov si, sp
+    mov dx, [si]
+    call print_hex
+    call print_newline
 
-; Reset the disk
-xor ah, ah
-int 0x13
+reset_disk:
+    xor ah, ah
+    int 0x13
 
-; Read sector 2 of the disk we booted on into memory. Start writing to 0xa0000 and continue from there sequentially.
-mov cx, 0x2 ; Cylinder 0, sector 2
-mov dl, [bp - 1] ; Get DL = disk number
-xor dh, dh ; Track 0
-mov ah, 0x2
-mov al, 0x1
-xor bx, bx
-mov es, bx
-mov bx, 0x8001
+; read_sectors:
+    mov cx, 0x2 ; Cylinder 0, sector 2
+    xor dx, dx  ; Track 0
+    mov si, sp
+    mov dl, [si] ; Get DL = disk number
+    mov ah, 0x2
+    mov al, 0x1 ; Number of sectors to read
+    xor bx, bx
+    mov es, bx
+    mov bx, 0x8001
+    int 0x13
 
-; Print the number of sectors that have been read
-int 0x13
-xor bx, bx
-mov ah, 0xe
-add al, '0'
-int 0x10
+print_number_of_read_sectors:
+    lea bx, [read_sectors_string]
+    mov dx, 0x5
+    call print_string
+    xor bx, bx
+    call print_number
+    lea bx, [read_sectors_string + 0x5]
+    mov dx, 0x8
+    call print_string
 
-add sp, 2
-duck:
+
+cleanup:
+    add sp, 2
+
+
+fallback:
     hlt
-    jmp duck
+    jmp fallback
 
+%include "print.asm"
 
-
-str:
-    db "Booted from drive ", 0
+booted_from_drive_string:
+    db "Booted from drive "
+read_sectors_string:
+    db "Read ", " sectors"
 
 times 510 - ($ - $$) db 0x0
 dw 0xaa55
