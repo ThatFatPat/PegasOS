@@ -52,7 +52,7 @@ switch_mode_16_to_32:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax
-    jmp CODE_SEG:0x8001
+    jmp CODE_SEG:init_protected_mode
 
 fallback:
     hlt
@@ -109,10 +109,9 @@ DATA_SEG equ gdt_data - gdt_start
 
 ; --- THIS PART OF THE CODE IS COPIED FROM OS-DEV.pdf, I READ THROUGH THE EXPLANATION AND IT'S POINTLESS TO CRAFT THIS MYSELF AS OF NOW. ---
 
-times 510 - ($ - $$) db 0x0
-dw 0xaa55
-[bits 32]
 
+; 32-bit Code Below!
+[bits 32]
 init_protected_mode:
     ; First of all we need to point all segment registers by the new GDT since what is contained in them is meaningless right now.
     mov ax, DATA_SEG
@@ -128,6 +127,15 @@ init_protected_mode:
     jmp protected_mode_main
 
 protected_mode_main:
+    lea ebx, [Welcome32_string]
+    mov ecx, 0x12
+    mov edx, 0xb8000
+    call print32_string
     jmp $
 
+%include "print32.asm"
+
+Welcome32_string: db "Welcome to 32-bit!"
+times 510 - ($ - $$) db 0x0
+dw 0xaa55
 times 1024 db 'A'
