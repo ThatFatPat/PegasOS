@@ -1,6 +1,6 @@
 xor bx, bx
 mov ss, bx
-mov sp, 0x8000
+mov sp, 0x7bff ; Area between [0x500, 0x7c00) is unused by BIOS: https://0xax.gitbooks.io/linux-insides/content/Booting/linux-bootstrap-1.html
 
 push dx ; dl = [bp - 1]
 
@@ -23,10 +23,10 @@ read_sectors:
     mov si, sp ; Cannot address using SP.
     mov dl, [si] ; Get DL = disk number
     mov ah, 0x2 ; Sub command INT13h AH=02h : Read Sectors from disk
-    mov al, 0x1 ; Number of sectors to read
+    mov al, 0x15 ; Number of sectors to read
     xor bx, bx
     mov es, bx ; Zero out ES
-    mov bx, 0x8001 ; Starting address
+    mov bx, end_rm ; Starting address, read sectors for pm and lm right after rm code so it stays sequential.
     int 0x13
 
 print_number_of_read_sectors:
@@ -49,7 +49,7 @@ switch_mode_16_to_32:
     mov eax, cr0
     or eax, 0x1
     mov cr0, eax ; Enable Protected Mode
-    jmp CODE_SEG:init_protected_mode ; Far jump to clear icache
+    jmp CODE_SEG:end_rm ; Far jump to clear icache
 
 fallback:
     hlt
