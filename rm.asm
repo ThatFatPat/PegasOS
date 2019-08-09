@@ -17,16 +17,30 @@ reset_disk:
     xor ah, ah ; INT13h, AH=00h : Reset Disk Services
     int 0x13
 
-read_sectors:
+NUM_PM_SECTORS equ 0x1
+
+read_pm_sectors:
     mov cx, 0x2 ; Cylinder 0, sector 2
     xor dx, dx  ; Track 0
     mov si, sp ; Cannot address using SP.
     mov dl, [si] ; Get DL = disk number
     mov ah, 0x2 ; Sub command INT13h AH=02h : Read Sectors from disk
-    mov al, 0x15 ; Number of sectors to read
+    mov al, NUM_PM_SECTORS ; Number of sectors to read
     xor bx, bx
     mov es, bx ; Zero out ES
     mov bx, end_rm ; Starting address, read sectors for pm and lm right after rm code so it stays sequential.
+    int 0x13
+
+read_kernel_sectors:
+    mov cx, 0x2+NUM_PM_SECTORS ; Cylinder 0, sector 2
+    xor dx, dx  ; Track 0
+    mov si, sp ; Cannot address using SP.
+    mov dl, [si] ; Get DL = disk number
+    mov ah, 0x2 ; Sub command INT13h AH=02h : Read Sectors from disk
+    mov al, 0x1 ; Number of sectors to read
+    xor bx, bx
+    mov es, bx ; Zero out ES
+    mov bx, KERNEL32_LOCATION ; Starting address, read sectors for pm and lm right after rm code so it stays sequential.
     int 0x13
 
 print_number_of_read_sectors:

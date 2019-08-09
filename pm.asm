@@ -20,6 +20,7 @@ protected_mode_main:
     mov ecx, 0x12
     mov edx, 0xb8000
     call print32_string
+    call KERNEL32_LOCATION
 
 ; BROKEN CODE
 ; disable_paging:
