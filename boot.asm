@@ -1,5 +1,6 @@
 [bits 16]
 org 0x7c00
+KERNEL32_LOCATION equ 0x8001
 MAIN_MEMORY64_PAGE equ 0x200
 
 start_rm:
@@ -17,11 +18,9 @@ start_pm:
 %include "pm.asm"
 
 end_pm:
+times 1024 - ($ - $$) db 0x0
+; start_lm:
 
-start_lm:
+; %include "lm.asm"
 
-%include "lm.asm"
-
-end_lm:
-
-times 1024 db 'A', 'B'
+; end_lm:
