@@ -21,6 +21,11 @@ protected_mode_main:
     mov edx, 0xb8000
     call print32_string
 
+disable_paging:
+    mov eax, cr0                                   ; Set the A-register to control register 0.
+    and eax, 01111111111111111111111111111111b     ; Clear the PG-bit, which is bit 31.
+    mov cr0, eax                                   ; Set control register 0 to the A-register.
+
 load_gdt64:
     lgdt [gdt64_descriptor] 
 
@@ -31,11 +36,70 @@ enable_pae:
 
 load_page_table:
     xor eax, eax
+    lea ebx, [pml4]
+    shl ebx, 0x11
+    mov eax, ebx
+    mov cr3, eax
     lea eax, [pdpt] 
     shl eax, 0x4
-    mov [pml4+0x1], eax
+    mov [pml4 + 0x1], eax
+    xor eax, eax
+    mov eax, MAIN_MEMORY64_PAGE  
+    shl eax, 0x6
+    mov [pdpt + 0x3], eax
+
+RM_LEN equ end_lm - start_lm
+
+copy_64_kernel_to_MAIN_MEMORY64_PAGE:
+    mov esi, start_lm
+    mov edi, MAIN_MEMORY64_PAGE
+    mov edx, RM_LEN
+    call memcpy
+
+EFER_LME equ 8
+MSR_EFER equ 0xc0000080
+switch_mode_32_to_64:
+    ; Enable Paging and Protection
+    mov ebx, 0x80000001
+    mov eax, cr0
+    mov eax, ebx
+    mov cr0, eax
+
+    ; Enable stuff in MSR
+    xor edx, edx ; Segmented Addressing by rdmsr (edx:eax)
+    lea eax, [esp - 0x4]
+    mov ecx, MSR_EFER
+    rdmsr
+    bts eax, EFER_LME
+    wrmsr
+    ; Transition to 64-bit code
+    mov eax, MAIN_MEMORY64_PAGE
+    push eax
+    ret
+
 
 jmp $
+
+; Copy from starting address ESI to starting address EDI. Copy ECX bytes.
+memcpy:
+    push esi
+    push edi
+    push ecx
+    push ebx
+    test ecx, ecx
+    jz .end_memcpy_loop
+ .memcpy_loop:
+    mov ebx, [esi]
+    mov [edi], ebx
+    inc esi
+    inc edi
+    loop .memcpy_loop
+.end_memcpy_loop:
+    pop ebx
+    pop ecx
+    pop edi
+    pop esi
+    ret
 
 %include "print32.asm"
 
@@ -102,8 +166,8 @@ pae_bit:
     times 3 db 0
 
 pml4:
-    dq 1000000000000000000000000000000000000000000000000000000000000011b
+    dq 1000000000000000000000000000000000000000000000000000000000000011b ; First entry
     times 4032 db 0
 pdpt:
-    ; Manually insert first entry (1GB page);
+    dq 1000000000000000000000000000000000000000000000000000000010000011b ; First entry
     times 4032 db 0 ; 4096 - 64
