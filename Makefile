@@ -10,14 +10,18 @@ ifeq ($(UNAME), Darwin)
 endif
 
 kernel32.o: kernel32.c
+ifeq ($(uname -r), Microsoft$)
+	clang-8 -ffreestanding -c --target=i386 $< -o $@
+else
 	clang -ffreestanding -c --target=i386 $< -o $@
+endif
 
 kernel32.bin: kernel32.o
 ifeq ($(UNAME), Darwin)
-		ld.lld -o kernel32.bin -Ttext $(KERNEL32_LOCATION) $^ --oformat binary
+		ld.lld -o kernel32.bin -m elf_i386  -Ttext $(KERNEL32_LOCATION) $^ --oformat binary
 endif
 ifeq ($(UNAME), Linux)
-		ld -o kernel32.bin -Ttext $(KERNEL32_LOCATION) $^ --oformat binary
+		ld -o kernel32.bin -m elf_i386  -Ttext $(KERNEL32_LOCATION) $^ --oformat binary
 endif
 
 boot16.bin: boot.asm
