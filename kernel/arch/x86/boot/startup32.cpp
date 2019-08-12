@@ -1,13 +1,7 @@
 #include <stdint.h>
 
-// Added init so main will compile without implicit declarations.
-int main();
-void init(){
-    main();
-}
-
-
-int main(){
+extern "C" int main()
+{
     // Constants
     uint32_t VIDEO_MEMORY = 0xb8000;
 
@@ -17,6 +11,6 @@ int main(){
 
     // Code
     uint32_t video_offset = 0x0;
-    char* hello = "Hello from C\n\r";
+    char *hello = "Hello from\n\r";
     return 0;
 }
