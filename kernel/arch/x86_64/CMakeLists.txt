@@ -1,2 +1,2 @@
-add_library(arch boot/boot.S boot/startup32.cpp include/arch/x86_64/gdt.h)
+add_library(arch boot/boot.S boot/startup32.cpp)
 target_include_directories(arch PUBLIC include)

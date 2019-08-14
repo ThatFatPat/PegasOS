@@ -7,9 +7,10 @@ include_directories(include)
 
 add_subdirectory(arch/x86_64)
 
-add_executable(kernel dummy.cpp)
+add_subdirectory(lib)
 
-target_link_libraries(kernel PRIVATE arch)
+add_executable(kernel dummy.cpp)
+target_link_libraries(kernel PRIVATE arch support)
 
 target_link_options(kernel PRIVATE -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld)
 set_target_properties(kernel PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld)
