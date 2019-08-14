@@ -21,62 +21,76 @@ mb_header_start:
 .long 8 # size
 mb_header_end:
 
+.section .bootrodata, "a"
+gdt_start:
+.quad 0 # null entry
+.quad GDT_ENTRY(0, 0xffffffff, GDT_FLAG_64, GDT_ACCESS_RING0 |
+                               GDT_ACCESS_NON_SYSTEM |
+                               GDT_ACCESS_EXEC) # early 64-bit code
+gdt_end:
+.set GDT_SIZE, gdt_end - gdt_start
+gdt_desc:
+.word GDT_SIZE - 1
+.long gdt_start
+
+.set CODE_SEG, GDT_ENTRY_SIZE
+
 .code32
 
 .section .boottext, "ax"
 .global _start32
 .type _start32, @function
+
 _start32:
-    cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
-    jnz multiboot_error
-    lea ebx, [Welcome32_string]
-    mov ecx, 0x12
-    mov edx, 0xb8000
-    call print32_string
-    jmp  fallback_32
+cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
+jnz 1f
+lea ebx, [Welcome32_string]
+mov ecx, 0x12
+xor edx, edx
+call print_string
+jmp  die
 
-multiboot_error:
-    lea ebx, [multiboot_error_string]
-    mov ecx, 0x25
-    mov edx, 0xb8000
-    call print32_string
-    jmp  fallback_32
-    
-fallback_32:
-    jmp fallback_32
+1:
+lea ebx, [multiboot_error_string]
+mov ecx, 0x25
+xor edx, edx
+call print_string
+jmp die
+.size _start32, . - _start32
 
-# 32-bit Printing Routines Below!
+die:
+hlt
+jmp die
+
 .set VIDEO_MEMORY, 0xb8000
 .set STDCOLOR, 0x0f
-# EBX - Address of string, ECX - Size of string, EDX - Current location in VIDEO_MEMORY.(If 0x0 assumes start of VIDEO_MEMORY)
-print32_string:
-    push ebp
-    mov ebp, esp
-    push eax
-    push ebx
-    push ecx
-    push edx
-    test edx, edx
-    jne .print32_string_loop
-    mov edx, VIDEO_MEMORY
+# EBX - Address of string, ECX - Size of string, EDX - Current offset in VIDEO_MEMORY.
+print_string:
+push ebp
+mov ebp, esp
+push eax
+push ebx
+push ecx
+push edx
+add edx, VIDEO_MEMORY
 
-.print32_string_loop:
-        mov al, BYTE PTR [ebx] # The current character
-        mov ah, STDCOLOR
-        test ecx, ecx
-        jz .end_print32_string
-        mov WORD PTR [edx], ax
-        add edx, 0x2
-        inc ebx
-        loop .print32_string_loop
-        
-.end_print32_string:
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-    leave
-    ret
+1:
+test ecx, ecx
+jz 2f
+mov al, BYTE PTR [ebx] # The current character
+mov ah, STDCOLOR
+mov WORD PTR [edx], ax
+add edx, 0x2
+inc ebx
+loop 1b
+
+2:
+pop edx
+pop ecx
+pop ebx
+pop eax
+leave
+ret
 
 .section .bootrodata, "a"
 
