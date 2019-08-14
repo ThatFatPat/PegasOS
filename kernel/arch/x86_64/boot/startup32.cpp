@@ -1,4 +1,3 @@
-#include <intellisense_workaround.h>
 #include <stdint.h>
 
 extern "C" int main() {
