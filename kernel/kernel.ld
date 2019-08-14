@@ -17,7 +17,7 @@ SECTIONS {
     *(.bootrodata)
   }
   .bootdata : {
-    *(.bootrodata)
+    *(.bootdata)
   }
   . = ALIGN(4K);
   _bootseg_end = .;
