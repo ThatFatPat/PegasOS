@@ -1,11 +1,24 @@
-add_compile_options(-ffreestanding -nostdlib)
-add_link_options(-ffreestanding -nostdlib)
+set(ADDITIONAL_FLAGS -ffreestanding -fno-exceptions -fno-rtti -mcmodel=kernel -mno-red-zone)
 
-add_subdirectory(arch/x86)
+add_compile_options(${ADDITIONAL_FLAGS})
+add_link_options(${ADDITIONAL_FLAGS} -nostdlib -z max-page-size=0x1000)
 
-add_executable(kernel.bin dummy.cpp)
+include_directories(include)
 
-target_link_libraries(kernel.bin PRIVATE arch)
+add_subdirectory(arch/x86_64)
 
-target_link_options(kernel.bin PRIVATE -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.lds.S)
-set_target_properties(kernel.bin PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/kernel.lds.S)
+add_executable(kernel dummy.cpp)
+
+target_link_libraries(kernel PRIVATE arch)
+
+target_link_options(kernel PRIVATE -T ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld)
+set_target_properties(kernel PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/kernel.ld)
+
+find_program(GRUB_MKRESCUE grub-mkrescue)
+if (GRUB_MKRESCUE)
+configure_file(grub.cfg ${CMAKE_BINARY_DIR}/iso/boot/grub/grub.cfg COPYONLY)
+add_custom_command(TARGET kernel POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:kernel> ${CMAKE_BINARY_DIR}/iso/boot/
+                                            COMMAND ${GRUB_MKRESCUE} -o ${CMAKE_BINARY_DIR}/PegasOS.iso ${CMAKE_BINARY_DIR}/iso)
+else()
+message(WARNING "Can't find grub-mkrescue, no boot image generated")
+endif()
