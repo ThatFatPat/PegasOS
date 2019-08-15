@@ -42,55 +42,55 @@ gdt_desc:
 .type _start32, @function
 
 _start32:
-cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
-jnz 1f
-lea ebx, [Welcome32_string]
-mov ecx, 0x12
-xor edx, edx
-call print_string
-jmp  die
+  cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
+  jnz 1f
+  lea ebx, [Welcome32_string]
+  mov ecx, 0x12
+  xor edx, edx
+  call print_string
+  jmp  die
 
 1:
-lea ebx, [multiboot_error_string]
-mov ecx, 0x25
-xor edx, edx
-call print_string
-jmp die
-.size _start32, . - _start32
+  lea ebx, [multiboot_error_string]
+  mov ecx, 0x25
+  xor edx, edx
+  call print_string
+  jmp die
+  .size _start32, . - _start32
 
 die:
-hlt
-jmp die
+  hlt
+  jmp die
 
 .set VIDEO_MEMORY, 0xb8000
 .set STDCOLOR, 0x0f
 # EBX - Address of string, ECX - Size of string, EDX - Current offset in VIDEO_MEMORY.
 print_string:
-push ebp
-mov ebp, esp
-push eax
-push ebx
-push ecx
-push edx
-add edx, VIDEO_MEMORY
+  push ebp
+  mov ebp, esp
+  push eax
+  push ebx
+  push ecx
+  push edx
+  add edx, VIDEO_MEMORY
 
 1:
-test ecx, ecx
-jz 2f
-mov al, BYTE PTR [ebx] # The current character
-mov ah, STDCOLOR
-mov WORD PTR [edx], ax
-add edx, 0x2
-inc ebx
-loop 1b
+  test ecx, ecx
+  jz 2f
+  mov al, BYTE PTR [ebx] # The current character
+  mov ah, STDCOLOR
+  mov WORD PTR [edx], ax
+  add edx, 0x2
+  inc ebx
+  loop 1b
 
 2:
-pop edx
-pop ecx
-pop ebx
-pop eax
-leave
-ret
+  pop edx
+  pop ecx
+  pop ebx
+  pop eax
+  leave
+  ret
 
 .section .bootrodata, "a"
 
