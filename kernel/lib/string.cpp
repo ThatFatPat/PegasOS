@@ -29,10 +29,10 @@ void* memmove(void* dest, const void* src, size_t count) {
 }
 
 void* memset(void* dest, int ch, size_t count) {
-  char* ch_dest = static_cast<char*>(dest);
+  unsigned char* ch_dest = static_cast<unsigned char*>(dest);
 
   for (size_t i = 0; i < count; i++) {
-    ch_dest[i] = static_cast<char>(ch);
+    ch_dest[i] = static_cast<unsigned char>(ch);
   }
 
   return dest;
