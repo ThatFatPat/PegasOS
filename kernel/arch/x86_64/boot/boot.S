@@ -1,3 +1,4 @@
+#include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
 
 #define ASM_FILE
@@ -53,19 +54,45 @@ _start32:
   call clear_screen32
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz 1f
+  push ebx # Preserve pointer to structure with multiboot information.
   lea ebx, [welcome32_string]
   xor edx, edx
   call print_string32
+  call check_long_mode
+  test al, al
+  jz 2f
+  jmp  enter_long_mode
 
-1:
+1: # Error: not loaded via multiboot2 protocol
   lea ebx, [multiboot_error_string]
+  xor edx, edx
+  call print_string32
+  jmp die
+2: # Error: 32-bit processor
+  lea ebx, [no_long_mode_error_string]
   xor edx, edx
   call print_string32
   jmp die
 
 .size _start32, . - _start32
 
-die:
+check_long_mode:
+  mov eax, CPUID_FUNC_EXT_CPUID # Check for extended cpuid functions
+  cpuid
+  cmp eax, CPUID_FUNC_EXT_CPUID
+  jbe 1f
+  mov eax, CPUID_FUNC_EXT_PROC_INFO
+  cpuid
+  test edx, CPU_FEATURE_LONG_MODE
+  setnz al
+  ret
+1: # No long mode support
+  xor eax, eax
+  ret
+
+enter_long_mode:
+
+die: # RIP
   hlt
   jmp die
 
@@ -73,3 +100,4 @@ die:
 
 welcome32_string: .asciz "Welcome to 32-bit!"
 multiboot_error_string: .asciz "Error! Please use Multiboot2 to boot!"
+no_long_mode_error_string: .asciz "Error: a 64-bit processor is required for PegasOS"
