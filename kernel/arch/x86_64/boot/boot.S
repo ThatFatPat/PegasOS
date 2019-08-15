@@ -44,24 +44,23 @@ stack_top:
 .code32
 
 .section .boottext, "ax"
+
 .global _start32
 .type _start32, @function
-
 _start32:
   lea ebp, [stack_top]
   mov esp, ebp
-  call clear_screen
+  call clear_screen32
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz 1f
   lea ebx, [welcome32_string]
   xor edx, edx
-  call print_string
-  jmp  die
+  call print_string32
 
 1:
   lea ebx, [multiboot_error_string]
   xor edx, edx
-  call print_string
+  call print_string32
   jmp die
 
 .size _start32, . - _start32
@@ -69,60 +68,6 @@ _start32:
 die:
   hlt
   jmp die
-
-.set VIDEO_MEMORY, 0xb8000
-# Asumes the screen is 80x25
-# TODO: parse correct values out of multiboot header
-.set VIDEO_WIDTH, 80
-.set VIDEO_HEIGHT, 25
-.set STDCOLOR, 0x0f
-
-# Print null-terminated string.
-# EBX - Address of string, EDX - Current offset in VIDEO_MEMORY.
-print_string:
-  push ebp
-  mov ebp, esp
-  push eax
-  push ebx
-  push edx
-  add edx, VIDEO_MEMORY
-  mov al, [ebx] # The current character
-  test al, al
-  jz 2f
-  
-1:
-  mov ah, STDCOLOR
-  mov [edx], ax
-  add edx, 0x2
-  inc ebx
-  mov al, [ebx]
-  test al, al
-  jnz 1b
-
-2:
-  pop edx
-  pop ebx
-  pop eax
-  leave
-  ret
-
-# Clear the screen.
-clear_screen:
-  push ebp
-  mov ebp, esp
-  push eax
-  push ecx
-  push edi
-  mov ecx, VIDEO_WIDTH * VIDEO_HEIGHT
-  xor ax, ax # Fill with null character
-  cld
-  mov edi, VIDEO_MEMORY
-  rep stosw
-  pop edi
-  pop ecx
-  pop eax
-  leave
-  ret
 
 .section .bootrodata, "a"
 

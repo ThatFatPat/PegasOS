@@ -1,0 +1,64 @@
+.intel_syntax noprefix
+
+.code32
+
+.section .boottext, "ax"
+
+.set VIDEO_MEMORY, 0xb8000
+# Asumes the screen is 80x25
+# TODO: parse correct values out of multiboot header
+.set VIDEO_WIDTH, 80
+.set VIDEO_HEIGHT, 25
+.set STDCOLOR, 0x0f
+
+# Print null-terminated string.
+# EBX - Address of string, EDX - Current offset in VIDEO_MEMORY.
+.global print_string32
+.type print_string32, @function
+print_string32:
+  push ebp
+  mov ebp, esp
+  push eax
+  push ebx
+  push edx
+  add edx, VIDEO_MEMORY
+  mov al, [ebx] # The current character
+  test al, al
+  jz 2f
+  
+1:
+  mov ah, STDCOLOR
+  mov [edx], ax
+  add edx, 0x2
+  inc ebx
+  mov al, [ebx]
+  test al, al
+  jnz 1b
+
+2:
+  pop edx
+  pop ebx
+  pop eax
+  leave
+  ret
+.size print_string32, . - print_string32
+
+.global clear_screen32
+.type clear_screen32, @function
+clear_screen32:
+  push ebp
+  mov ebp, esp
+  push eax
+  push ecx
+  push edi
+  mov ecx, VIDEO_WIDTH * VIDEO_HEIGHT
+  xor ax, ax # Fill with null character
+  cld
+  mov edi, VIDEO_MEMORY
+  rep stosw
+  pop edi
+  pop ecx
+  pop eax
+  leave
+  ret
+.size clear_screen32, . - print_string32
