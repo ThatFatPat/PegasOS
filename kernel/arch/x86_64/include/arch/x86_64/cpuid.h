@@ -1,0 +1,6 @@
+#pragma once
+
+#define CPUID_FUNC_EXT_CPUID 0x80000000
+#define CPUID_FUNC_EXT_PROC_INFO 0x80000001
+
+#define CPU_FEATURE_LONG_MODE (1 << 29)
