@@ -1,8 +1,9 @@
 #include <string.h>
+#include <stdint.h>
 
 void* memcpy(void* __restrict dest, const void* src, size_t count) {
-  char* ch_dest = static_cast<char*>(dest);
-  const char* ch_src = static_cast<const char*>(src);
+  uint8_t* ch_dest = static_cast<uint8_t*>(dest);
+  const uint8_t* ch_src = static_cast<const uint8_t*>(src);
 
   for (size_t i = 0; i < count; i++) {
     ch_dest[i] = ch_src[i];
@@ -12,8 +13,8 @@ void* memcpy(void* __restrict dest, const void* src, size_t count) {
 }
 
 void* memmove(void* dest, const void* src, size_t count) {
-  char* ch_dest = static_cast<char*>(dest);
-  const char* ch_src = static_cast<const char*>(src);
+  uint8_t* ch_dest = static_cast<uint8_t*>(dest);
+  const uint8_t* ch_src = static_cast<const uint8_t*>(src);
 
   if (ch_src < ch_dest) {
     for (size_t i = count; i > 0; i--) {
@@ -29,10 +30,10 @@ void* memmove(void* dest, const void* src, size_t count) {
 }
 
 void* memset(void* dest, int ch, size_t count) {
-  unsigned char* ch_dest = static_cast<unsigned char*>(dest);
+  uint8_t* ch_dest = static_cast<uint8_t*>(dest);
 
   for (size_t i = 0; i < count; i++) {
-    ch_dest[i] = static_cast<unsigned char>(ch);
+    ch_dest[i] = static_cast<uint8_t>(ch);
   }
 
   return dest;
