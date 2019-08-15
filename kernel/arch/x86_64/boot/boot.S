@@ -26,8 +26,8 @@ gdt_start:
 .quad 0 # null entry
 .quad GDT_ENTRY(0, 0xffffffff, GDT_FLAG_64, GDT_ACCESS_PRESENT |
                                             GDT_ACCESS_RING0 |
-                               GDT_ACCESS_NON_SYSTEM |
-                               GDT_ACCESS_EXEC) # early 64-bit code
+                                            GDT_ACCESS_NON_SYSTEM |
+                                            GDT_ACCESS_EXEC) # early 64-bit code
 gdt_end:
 .set GDT_SIZE, gdt_end - gdt_start
 gdt_desc:
@@ -36,6 +36,11 @@ gdt_desc:
 
 .set CODE_SEG, GDT_ENTRY_SIZE
 
+.section .bootbss, "aw", @nobits
+stack_bottom:
+.skip 0x4000
+stack_top:
+
 .code32
 
 .section .boottext, "ax"
@@ -43,57 +48,84 @@ gdt_desc:
 .type _start32, @function
 
 _start32:
+  lea ebp, [stack_top]
+  mov esp, ebp
+  call clear_screen
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz 1f
+  push ebx # Push pointer to structure with multiboot information.
   lea ebx, [Welcome32_string]
-  mov ecx, 0x12
   xor edx, edx
   call print_string
   jmp  die
 
 1:
   lea ebx, [multiboot_error_string]
-  mov ecx, 0x25
   xor edx, edx
   call print_string
   jmp die
-  .size _start32, . - _start32
+
+.size _start32, . - _start32
 
 die:
   hlt
   jmp die
 
 .set VIDEO_MEMORY, 0xb8000
+# Asumes the screen is 80x25
+# TODO: parse correct values out of multiboot header
+.set VIDEO_WIDTH, 80
+.set VIDEO_HEIGHT, 25
 .set STDCOLOR, 0x0f
-# EBX - Address of string, ECX - Size of string, EDX - Current offset in VIDEO_MEMORY.
+
+# Print null-terminated string.
+# EBX - Address of string, EDX - Current offset in VIDEO_MEMORY.
 print_string:
   push ebp
   mov ebp, esp
   push eax
   push ebx
-  push ecx
   push edx
   add edx, VIDEO_MEMORY
-
-1:
-  test ecx, ecx
+  mov al, [ebx] # The current character
+  test al, al
   jz 2f
-  mov al, BYTE PTR [ebx] # The current character
+  
+1:
   mov ah, STDCOLOR
-  mov WORD PTR [edx], ax
+  mov [edx], ax
   add edx, 0x2
   inc ebx
-  loop 1b
+  mov al, [ebx]
+  test al, al
+  jnz 1b
 
 2:
   pop edx
-  pop ecx
   pop ebx
+  pop eax
+  leave
+  ret
+
+# Clear the screen.
+clear_screen:
+  push ebp
+  mov ebp, esp
+  push eax
+  push ecx
+  push edi
+  mov ecx, VIDEO_WIDTH * VIDEO_HEIGHT
+  xor ax, ax # Fill with null character
+  cld
+  mov edi, VIDEO_MEMORY
+  rep stosw
+  pop edi
+  pop ecx
   pop eax
   leave
   ret
 
 .section .bootrodata, "a"
 
-Welcome32_string: .ascii "Welcome to 32-bit!"
-multiboot_error_string: .ascii "Error! Please use Multiboot2 to boot!"
+welcome32_string: .asciz "Welcome to 32-bit!"
+multiboot_error_string: .asciz "Error! Please use Multiboot2 to boot!"
