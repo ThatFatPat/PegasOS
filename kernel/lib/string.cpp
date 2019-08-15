@@ -1,6 +1,5 @@
 #include <string.h>
 
-extern "C" {
 void* memcpy(void* __restrict dest, const void* src, size_t count) {
   char* ch_dest = static_cast<char*>(dest);
   const char* ch_src = static_cast<const char*>(src);
@@ -18,7 +17,7 @@ void* memmove(void* dest, const void* src, size_t count) {
 
   if (ch_src < ch_dest) {
     for (size_t i = count; i > 0; i--) {
-      ch_dest[i] = ch_src[i];
+      ch_dest[i - 1] = ch_src[i - 1];
     }
   } else {
     for (size_t i = 0; i < count; i++) {
@@ -37,5 +36,4 @@ void* memset(void* dest, int ch, size_t count) {
   }
 
   return dest;
-}
 }
