@@ -53,8 +53,7 @@ _start32:
   call clear_screen
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz 1f
-  push ebx # Push pointer to structure with multiboot information.
-  lea ebx, [Welcome32_string]
+  lea ebx, [welcome32_string]
   xor edx, edx
   call print_string
   jmp  die
