@@ -55,9 +55,6 @@ _start32:
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz 1f
   push ebx # Preserve pointer to structure with multiboot information.
-  lea ebx, [welcome32_string]
-  xor edx, edx
-  call print_string32
   call check_long_mode
   test al, al
   jz 2f
@@ -98,6 +95,5 @@ die: # RIP
 
 .section .bootrodata, "a"
 
-welcome32_string: .asciz "Welcome to 32-bit!"
 multiboot_error_string: .asciz "Error! Please use Multiboot2 to boot!"
 no_long_mode_error_string: .asciz "Error: a 64-bit processor is required for PegasOS"
