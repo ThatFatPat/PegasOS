@@ -17,7 +17,7 @@ mb_header_start:
 .long MB_HEADER_CHECKSUM
 # multiboot2 final tag
 .align 8
-.word 0 # type
+.word MULTIBOOT_TAG_TYPE_END # type
 .word 0 # flags
 .long 8 # size
 mb_header_end:
