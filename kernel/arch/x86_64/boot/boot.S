@@ -25,10 +25,12 @@ mb_header_end:
 .section .bootrodata, "a"
 gdt_start:
 .quad 0 # null entry
-.quad GDT_ENTRY(0, 0xffffffff, GDT_FLAG_64, GDT_ACCESS_PRESENT |
-                                            GDT_ACCESS_RING0 |
-                                            GDT_ACCESS_NON_SYSTEM |
-                                            GDT_ACCESS_EXEC) # early 64-bit code
+# native long mode code
+# note: base and limit here are ignored, only flags matter
+.quad GDT_ENTRY(0, 0, GDT_FLAG_64, GDT_ACCESS_PRESENT |
+                                   GDT_ACCESS_RING0 |
+                                   GDT_ACCESS_NON_SYSTEM |
+                                   GDT_ACCESS_EXEC)
 gdt_end:
 .set GDT_SIZE, gdt_end - gdt_start
 gdt_desc:
