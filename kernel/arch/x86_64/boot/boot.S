@@ -1,5 +1,6 @@
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
+#include <arch/x86_64/paging.h>
 
 #define ASM_FILE
 #include <multiboot2.h>
@@ -46,6 +47,15 @@ stack_bottom:
 .skip EARLY_STACK_SIZE
 stack_top:
 
+# Space for early 4GiB identity page tables
+.align PML4_ALIGN
+early_pml4:
+.skip PML4_SIZE
+early_pdpt:
+.skip PDPT_SIZE
+early_page_directories:
+.skip 4 * PAGE_DIRECTORY_SIZE
+
 .code32
 
 .section .boottext, "ax"
@@ -58,7 +68,6 @@ _start32:
   call clear_screen32
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz .Lno_mutliboot
-  push ebx # Preserve pointer to structure with multiboot information.
   call check_long_mode
   test al, al
   jz .Lno_long_mode
@@ -91,6 +100,30 @@ check_long_mode:
   ret
 
 enter_long_mode:
+  # Set up early 4GiB identity mapping
+  lea eax, [early_pdpt + PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE]
+  mov [early_pml4], eax
+  lea eax, [early_page_directories + PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE]
+  lea edi, [early_pdpt]
+  mov ecx, 4
+
+.Lfill_pdpt:
+  mov [edi], eax
+  add eax, PAGE_DIRECTORY_SIZE
+  add edi, PDPT_ENTRY_SIZE
+  loop .Lfill_pdpt
+
+  mov eax, PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE | PDT_FLAG_2MB
+  lea edi, [early_page_directories]
+  xor ecx, ecx
+
+.Lfill_page_directories:
+  mov [early_page_directories + PAGE_DIRECTORY_ENTRY_SIZE * ecx], eax
+  add eax, PDT_PAGE_SIZE
+  inc ecx
+  cmp ecx, 4 * (PAGE_DIRECTORY_SIZE / 8)
+  jne .Lfill_page_directories
+
 
 die: # RIP
   hlt
