@@ -56,19 +56,18 @@ _start32:
   mov esp, ebp
   call clear_screen32
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
-  jnz 1f
+  jnz .Lno_mutliboot
   push ebx # Preserve pointer to structure with multiboot information.
   call check_long_mode
   test al, al
-  jz 2f
+  jz .Lno_long_mode
   jmp  enter_long_mode
-
-1: # Error: not loaded via multiboot2 protocol
+.Lno_mutliboot: # Error: not loaded via multiboot2 protocol
   lea ebx, [multiboot_error_string]
   xor edx, edx
   call print_string32
   jmp die
-2: # Error: 32-bit processor
+.Lno_long_mode: # Error: 32-bit processor
   lea ebx, [no_long_mode_error_string]
   xor edx, edx
   call print_string32
