@@ -1,6 +1,10 @@
 #pragma once
 
-#define PAGE_SIZE 0x1000 // 4KiB
+#define PAGE_SHIFT 12
+#define PAGE_SIZE (1 << PAGE_SHIFT) // 4KiB
+
+#define PDT_PAGE_SHIFT 21
+#define PDT_PAGE_SIZE (1 << PDT_PAGE_SHIFT) // 2MiB
 
 #define PML4_ALIGN 0x1000
 #define PML4_SIZE 0x1000
