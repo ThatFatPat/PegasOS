@@ -1,2 +1,2 @@
-target remote | qemu-system-i386.exe -gdb stdio -cdrom ./build/PegasOS.iso
+target remote | qemu-system-x86_64.exe -gdb stdio -cdrom ./build/PegasOS.iso
 set disassembly-flavor intel
