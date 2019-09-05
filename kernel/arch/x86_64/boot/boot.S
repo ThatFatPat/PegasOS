@@ -41,8 +41,9 @@ gdt_desc:
 
 .section .bootbss, "aw", @nobits
 
+.set EARLY_STACK_SIZE, 0x4000 # 16KiB
 stack_bottom:
-.skip 0x4000 # 16KiB
+.skip EARLY_STACK_SIZE
 stack_top:
 
 .code32
