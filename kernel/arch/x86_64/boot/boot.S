@@ -25,7 +25,7 @@ mb_header_start:
 mb_header_end:
 
 .section .bootrodata, "a"
-gdt_start:
+early_gdt_start:
 .quad 0 # null entry
 # native long mode code
 # note: base and limit here are ignored, only flags matter
@@ -33,20 +33,20 @@ gdt_start:
                                    GDT_ACCESS_RING0 |
                                    GDT_ACCESS_NON_SYSTEM |
                                    GDT_ACCESS_EXEC)
-gdt_end:
-.set GDT_SIZE, gdt_end - gdt_start
-gdt_desc:
-.word GDT_SIZE - 1
-.long gdt_start
+early_gdt_end:
+.set EARLY_GDT_SIZE, early_gdt_end - early_gdt_start
+early_gdt_desc:
+.word EARLY_GDT_SIZE - 1
+.long early_gdt_start
 
-.set CODE_SEG, GDT_ENTRY_SIZE
+.set EARLY_CODE_SEG, GDT_ENTRY_SIZE
 
 .section .bootbss, "aw", @nobits
 
 .set EARLY_STACK_SIZE, 0x4000 # 16KiB
-stack_bottom:
+early_stack_bottom:
 .skip EARLY_STACK_SIZE
-stack_top:
+early_stack_top:
 
 # Space for early 4GiB identity page tables
 .align PML4_ALIGN
@@ -64,7 +64,7 @@ early_page_directories:
 .global _start32
 .type _start32, @function
 _start32:
-  lea ebp, [stack_top]
+  lea ebp, [early_stack_top]
   mov esp, ebp
   call clear_screen32
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
@@ -136,8 +136,8 @@ enter_long_mode:
   mov eax, CR0_PE | CR0_PG
   mov cr0, eax
 
-  lgdt gdt_desc
-  jmp CODE_SEG:_start64
+  lgdt early_gdt_desc
+  jmp EARLY_CODE_SEG:_start64
 
 die: # RIP
   hlt
