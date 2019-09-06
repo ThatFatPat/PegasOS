@@ -1,3 +1,4 @@
+#include <arch/x86_64/control_regs.h>
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/paging.h>
@@ -124,10 +125,29 @@ enter_long_mode:
   cmp ecx, 4 * (PAGE_DIRECTORY_SIZE / 8)
   jne .Lfill_page_directories
 
+  lea eax, [early_pml4]
+  mov cr3, eax
+  mov eax, CR4_PAE
+  mov cr4, eax
+  mov ecx, MSR_EFER
+  rdmsr
+  or eax, MSR_EFER_LME
+  wrmsr
+  mov eax, CR0_PE | CR0_PG
+  mov cr0, eax
+
+  lgdt gdt_desc
+  jmp CODE_SEG:_start64
 
 die: # RIP
   hlt
   jmp die
+
+.code64
+
+_start64:
+1: hlt
+jmp 1b
 
 .section .bootrodata, "a"
 
