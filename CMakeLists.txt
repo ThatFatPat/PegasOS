@@ -2,6 +2,16 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 project(PegasOS CXX ASM)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_ASM_FLAGS_DEBUG "-g")
+
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
+set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "-g")
+
+set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os")
+
 add_compile_options(-Wall -Wextra)
 
 add_subdirectory(kernel)
