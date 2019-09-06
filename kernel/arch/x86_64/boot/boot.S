@@ -83,9 +83,9 @@ _start32:
   xor edx, edx
   call print_string32
   jmp die
-
 .size _start32, . - _start32
 
+.type check_long_mode, @function
 check_long_mode:
   mov eax, CPUID_FUNC_EXT_CPUID # Check for extended cpuid functions
   cpuid
@@ -99,7 +99,9 @@ check_long_mode:
 1: # No long mode support
   xor eax, eax
   ret
+.size check_long_mode, . - check_long_mode
 
+.type enter_long_mode, @function
 enter_long_mode:
   # Set up early 4GiB identity mapping
   lea eax, [early_pdpt + PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE]
@@ -138,13 +140,17 @@ enter_long_mode:
 
   lgdt early_gdt_desc
   jmp EARLY_CODE_SEG:_start64
+.size enter_long_mode, . - enter_long_mode
 
+.type die, @function
 die: # RIP
   hlt
   jmp die
+.size die, . - die
 
 .code64
 
+.type _start64, @function
 _start64:
   xor ax, ax
   mov ss, ax
@@ -152,8 +158,9 @@ _start64:
   mov es, ax
   mov fs, ax
   mov gs, ax
-1: hlt
-jmp 1b
+  1: hlt
+  jmp 1b
+.size _start64, . - _start64
 
 .section .bootrodata, "a"
 
