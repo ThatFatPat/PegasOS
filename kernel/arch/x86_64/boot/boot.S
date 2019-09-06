@@ -146,6 +146,12 @@ die: # RIP
 .code64
 
 _start64:
+  xor ax, ax
+  mov ss, ax
+  mov ds, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
 1: hlt
 jmp 1b
 
