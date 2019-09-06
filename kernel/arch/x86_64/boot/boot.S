@@ -158,6 +158,7 @@ _start64:
   mov es, ax
   mov fs, ax
   mov gs, ax
+  mov dword ptr [0xb8000], 0x074c # Display 'L' in light gray
   1: hlt
   jmp 1b
 .size _start64, . - _start64
