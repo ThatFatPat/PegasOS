@@ -9,7 +9,7 @@
 # TODO: parse correct values out of multiboot header
 .set VIDEO_WIDTH, 80
 .set VIDEO_HEIGHT, 25
-.set STDCOLOR, 0x0f
+.set STDCOLOR, 0x07
 
 # Print null-terminated string.
 # EBX - Address of string, EDX - Current offset in VIDEO_MEMORY.
