@@ -15,3 +15,4 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os")
 add_compile_options(-Wall -Wextra)
 
 add_subdirectory(kernel)
+add_subdirectory(iso)
