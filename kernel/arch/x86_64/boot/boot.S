@@ -117,7 +117,6 @@ enter_long_mode:
   loop .Lfill_pdpt
 
   mov eax, PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE | PDT_FLAG_2MB
-  lea edi, [early_page_directories]
   xor ecx, ecx
 
 .Lfill_page_directories:
