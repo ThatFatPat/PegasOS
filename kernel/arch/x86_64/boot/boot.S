@@ -67,6 +67,7 @@ _start32:
   lea ebp, [early_stack_top]
   mov esp, ebp
   call clear_screen32
+  mov esi, ebx # preserve pointer to multiboot info
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz .Lno_mutliboot
   call check_long_mode
