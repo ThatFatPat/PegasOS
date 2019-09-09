@@ -3,9 +3,7 @@
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/paging.h>
 
-#define ASM_FILE
 #include <multiboot2.h>
-#undef ASM_FILE
 
 .intel_syntax noprefix
 
