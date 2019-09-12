@@ -42,7 +42,7 @@ namespace arch::x86_64 {
 }
 
 [[gnu::always_inline]] inline void write_cr3(uint64_t value) {
-  asm("mov %0, %%cr3" : : "r"(value));
+  asm("mov %0, %%cr3" : : "r"(value) : "memory");
 }
 
 [[gnu::always_inline]] inline uint64_t read_cr4() {
