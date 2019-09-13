@@ -26,6 +26,7 @@ mb_header_start:
 mb_header_end:
 
 .section .bootrodata, "a"
+
 early_gdt_start:
 .quad 0 # null entry
 # native long mode code
@@ -42,8 +43,10 @@ early_gdt_desc:
 
 .set EARLY_CODE_SEG, X86_64_GDT_ENTRY_SIZE
 
-.section .bootbss, "aw", @nobits
+multiboot_error_string: .asciz "Error! Please use Multiboot2 to boot!"
+no_long_mode_error_string: .asciz "Error: a 64-bit processor is required for PegasOS"
 
+.section .bootbss, "aw", @nobits
 
 # Space for early 4GiB identity page tables
 .align X86_64_PT_ALIGN
@@ -166,8 +169,3 @@ _start64:
   1: hlt
   jmp 1b
 .size _start64, . - _start64
-
-.section .bootrodata, "a"
-
-multiboot_error_string: .asciz "Error! Please use Multiboot2 to boot!"
-no_long_mode_error_string: .asciz "Error: a 64-bit processor is required for PegasOS"
