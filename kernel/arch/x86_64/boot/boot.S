@@ -43,8 +43,8 @@ early_gdt_desc:
 
 .set EARLY_CODE_SEG, X86_64_GDT_ENTRY_SIZE
 
-multiboot_error_string: .asciz "Error! Please use Multiboot2 to boot!"
-no_long_mode_error_string: .asciz "Error: a 64-bit processor is required for PegasOS"
+multiboot_error_string: .asciz "Error: PegasOS requires a multiboot2-compliant bootloader"
+no_long_mode_error_string: .asciz "Error: PegasOS requires a 64-bit processor"
 
 .section .bootbss, "aw", @nobits
 
