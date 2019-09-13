@@ -27,17 +27,17 @@ early_gdt_start:
 .quad 0 # null entry
 # native long mode code
 # note: base and limit here are ignored, only flags matter
-.quad GDT_ENTRY(0, 0, GDT_FLAG_64, GDT_ACCESS_PRESENT |
-                                   GDT_ACCESS_RING0 |
-                                   GDT_ACCESS_NON_SYSTEM |
-                                   GDT_ACCESS_EXEC)
+.quad X86_64_GDT_ENTRY(0, 0, X86_64_GDT_FLAG_64, X86_64_GDT_ACCESS_PRESENT |
+                                                 X86_64_GDT_ACCESS_RING0 |
+                                                 X86_64_GDT_ACCESS_NON_SYSTEM |
+                                                 X86_64_GDT_ACCESS_EXEC)
 early_gdt_end:
 .set EARLY_GDT_SIZE, early_gdt_end - early_gdt_start
 early_gdt_desc:
 .word EARLY_GDT_SIZE - 1
 .long early_gdt_start
 
-.set EARLY_CODE_SEG, GDT_ENTRY_SIZE
+.set EARLY_CODE_SEG, X86_64_GDT_ENTRY_SIZE
 
 .section .bootbss, "aw", @nobits
 
@@ -86,13 +86,13 @@ _start32:
 
 .type check_long_mode, @function
 check_long_mode:
-  mov eax, CPUID_FUNC_EXT_CPUID # Check for extended cpuid functions
+  mov eax, X86_64_CPUID_FUNC_EXT_CPUID # Check for extended cpuid functions
   cpuid
-  cmp eax, CPUID_FUNC_EXT_CPUID
+  cmp eax, X86_64_CPUID_FUNC_EXT_CPUID
   jbe 1f
-  mov eax, CPUID_FUNC_EXT_PROC_INFO
+  mov eax, X86_64_CPUID_FUNC_EXT_PROC_INFO
   cpuid
-  test edx, CPU_FEATURE_LONG_MODE
+  test edx, X86_64_CPU_FEATURE_LONG_MODE
   setnz al
   ret
 1: # No long mode support
@@ -127,13 +127,13 @@ enter_long_mode:
 
   lea eax, [early_pml4]
   mov cr3, eax
-  mov eax, CR4_PAE
+  mov eax, X86_64_CR4_PAE
   mov cr4, eax
-  mov ecx, MSR_EFER
+  mov ecx, X86_64_MSR_EFER
   rdmsr
-  or eax, MSR_EFER_LME
+  or eax, X86_64_MSR_EFER_LME
   wrmsr
-  mov eax, CR0_PE | CR0_PG
+  mov eax, X86_64_CR0_PE | X86_64_CR0_PG
   mov cr0, eax
 
   lgdt early_gdt_desc
