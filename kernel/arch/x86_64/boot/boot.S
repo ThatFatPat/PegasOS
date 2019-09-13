@@ -48,14 +48,12 @@ no_long_mode_error_string: .asciz "Error: PegasOS requires a 64-bit processor"
 
 .section .bootbss, "aw", @nobits
 
-# Space for early 4GiB identity page tables
+# Space for early 1GiB identity page tables
 .align X86_64_PT_ALIGN
-early_pml4:
+early_low_pdpt:
 .skip X86_64_PT_SIZE
-early_pdpt:
+early_low_pd:
 .skip X86_64_PT_SIZE
-early_page_directories:
-.skip 4 * X86_64_PT_SIZE
 
 .section .bss, "aw", @nobits
 
@@ -111,30 +109,23 @@ check_long_mode:
 
 .type enter_long_mode, @function
 enter_long_mode:
-  # Set up early 4GiB identity mapping
-  lea eax, [early_pdpt + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  mov [early_pml4], eax
-  lea eax, [early_page_directories + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  lea edi, [early_pdpt]
-  mov ecx, 4
-
-.Lfill_pdpt:
-  mov [edi], eax
-  add eax, X86_64_PT_SIZE
-  add edi, X86_64_PT_ENTRY_SIZE
-  loop .Lfill_pdpt
+  # Set up early 1GiB identity mapping
+  lea eax, [early_low_pdpt + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov [PHYS_ADDR(pml4)], eax
+  lea eax, [early_low_pd + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov [early_low_pdpt], eax
 
   mov eax, X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE | X86_64_MMU_FLAG_LARGE
   xor ecx, ecx
 
-.Lfill_page_directories:
-  mov [early_page_directories + X86_64_PT_ENTRY_SIZE * ecx], eax
+.Lfill_low_pd:
+  mov [early_low_pd + X86_64_PT_ENTRY_SIZE * ecx], eax
   add eax, X86_64_PDT_PAGE_SIZE
   inc ecx
-  cmp ecx, 4 * (X86_64_PT_SIZE / 8)
-  jne .Lfill_page_directories
+  cmp ecx, X86_64_PT_ENTRIES
+  jne .Lfill_low_pd
 
-  lea eax, [early_pml4]
+  lea eax, [PHYS_ADDR(pml4)]
   mov cr3, eax
   mov eax, X86_64_CR4_PAE
   mov cr4, eax
