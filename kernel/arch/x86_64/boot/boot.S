@@ -1,9 +1,12 @@
+#include <arch/image.h>
 #include <arch/x86_64/control_regs.h>
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/mmu.h>
 
 #include <multiboot2.h>
+
+#define PHYS_ADDR(addr) ((addr) - ARCH_KERNEL_VMA_OFFSET)
 
 .intel_syntax noprefix
 
@@ -41,10 +44,6 @@ early_gdt_desc:
 
 .section .bootbss, "aw", @nobits
 
-.set EARLY_STACK_SIZE, 0x4000 # 16KiB
-early_stack_bottom:
-.skip EARLY_STACK_SIZE
-early_stack_top:
 
 # Space for early 4GiB identity page tables
 .align X86_64_PT_ALIGN
@@ -55,6 +54,13 @@ early_pdpt:
 early_page_directories:
 .skip 4 * X86_64_PT_SIZE
 
+.section .bss, "aw", @nobits
+
+.set EARLY_STACK_SIZE, 0x4000 # 16KiB
+early_stack_bottom:
+.skip EARLY_STACK_SIZE
+early_stack_top:
+
 .code32
 
 .section .boottext, "ax"
@@ -62,7 +68,7 @@ early_page_directories:
 .global _start32
 .type _start32, @function
 _start32:
-  lea ebp, [early_stack_top]
+  lea ebp, [PHYS_ADDR(early_stack_top)]
   mov esp, ebp
   call clear_screen32
   mov esi, ebx # preserve pointer to multiboot info
