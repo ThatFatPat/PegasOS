@@ -1,5 +1,10 @@
 #include <string.h>
+
 #include <stdint.h>
+
+#undef memcpy
+#undef memmove
+#undef memset
 
 void* memcpy(void* __restrict dest, const void* src, size_t count) {
   uint8_t* ch_dest = static_cast<uint8_t*>(dest);
