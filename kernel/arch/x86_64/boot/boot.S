@@ -1,7 +1,7 @@
 #include <arch/x86_64/control_regs.h>
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
-#include <arch/x86_64/paging.h>
+#include <arch/x86_64/mmu.h>
 
 #include <multiboot2.h>
 
@@ -47,13 +47,13 @@ early_stack_bottom:
 early_stack_top:
 
 # Space for early 4GiB identity page tables
-.align PML4_ALIGN
+.align X86_64_PT_ALIGN
 early_pml4:
-.skip PML4_SIZE
+.skip X86_64_PT_SIZE
 early_pdpt:
-.skip PDPT_SIZE
+.skip X86_64_PT_SIZE
 early_page_directories:
-.skip 4 * PAGE_DIRECTORY_SIZE
+.skip 4 * X86_64_PT_SIZE
 
 .code32
 
@@ -103,26 +103,26 @@ check_long_mode:
 .type enter_long_mode, @function
 enter_long_mode:
   # Set up early 4GiB identity mapping
-  lea eax, [early_pdpt + PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE]
+  lea eax, [early_pdpt + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [early_pml4], eax
-  lea eax, [early_page_directories + PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE]
+  lea eax, [early_page_directories + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   lea edi, [early_pdpt]
   mov ecx, 4
 
 .Lfill_pdpt:
   mov [edi], eax
-  add eax, PAGE_DIRECTORY_SIZE
-  add edi, PDPT_ENTRY_SIZE
+  add eax, X86_64_PT_SIZE
+  add edi, X86_64_PT_ENTRY_SIZE
   loop .Lfill_pdpt
 
-  mov eax, PAGE_FLAG_PRESENT | PAGE_FLAG_WRITE | PDT_FLAG_2MB
+  mov eax, X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE | X86_64_MMU_FLAG_LARGE
   xor ecx, ecx
 
 .Lfill_page_directories:
-  mov [early_page_directories + PAGE_DIRECTORY_ENTRY_SIZE * ecx], eax
-  add eax, PDT_PAGE_SIZE
+  mov [early_page_directories + X86_64_PT_ENTRY_SIZE * ecx], eax
+  add eax, X86_64_PDT_PAGE_SIZE
   inc ecx
-  cmp ecx, 4 * (PAGE_DIRECTORY_SIZE / 8)
+  cmp ecx, 4 * (X86_64_PT_SIZE / 8)
   jne .Lfill_page_directories
 
   lea eax, [early_pml4]
