@@ -58,9 +58,8 @@ early_low_pd:
 .section .bss, "aw", @nobits
 
 .set EARLY_STACK_SIZE, 0x4000 # 16KiB
-early_stack_bottom:
-.skip EARLY_STACK_SIZE
-early_stack_top:
+.set EARLY_STACK_ALIGN, 0x10
+.comm early_stack, EARLY_STACK_SIZE, EARLY_STACK_ALIGN
 
 .code32
 
@@ -69,8 +68,7 @@ early_stack_top:
 .global _start32
 .type _start32, @function
 _start32:
-  lea ebp, [PHYS_ADDR(early_stack_top)]
-  mov esp, ebp
+  lea esp, [PHYS_ADDR(early_stack) + EARLY_STACK_SIZE]
   call clear_screen32
   mov esi, ebx # preserve pointer to multiboot info
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
@@ -168,15 +166,11 @@ _start64:
   lea rax, [early_low_pd + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [PHYS_ADDR(high_pdpt) + X86_64_PDPT_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
        * X86_64_PT_ENTRY_SIZE], rax
-  jmp high_entry
   
-.size _start64, . - _start64
-
-.text
-
-.type high_entry, @function
-high_entry:
-  mov dword ptr [0xb8000], 0x074c # Display 'L' in light gray
+  lea rsp, [early_stack + EARLY_STACK_SIZE]
+  mov rdi, rsi
+  call x86_64_early_entry
   1: hlt
   jmp 1b
-.size high_entry, . - high_entry
+
+.size _start64, . - _start64
