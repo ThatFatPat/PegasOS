@@ -190,7 +190,7 @@ _start64:
 .Lfill_kernel_pd:
   mov [PHYS_ADDR(kernel_pdt) + X86_64_PT_ENTRY_SIZE * rdi], rax
   add rax, X86_64_PDT_PAGE_SIZE
-  add rdi, X86_64_PT_ENTRY_SIZE
+  inc rdi
   loop .Lfill_kernel_pd
 
   mov dword ptr [0xb8000], 0x074c # Display 'L' in light gray
