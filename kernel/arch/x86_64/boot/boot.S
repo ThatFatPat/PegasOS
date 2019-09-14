@@ -2,7 +2,7 @@
 #include <arch/x86_64/control_regs.h>
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
-#include <arch/x86_64/mmu.h>
+#include <arch/x86_64/mmu_constants.h>
 
 #include <multiboot2.h>
 
