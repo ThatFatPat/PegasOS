@@ -150,12 +150,49 @@ die: # RIP
 
 .type _start64, @function
 _start64:
-  xor ax, ax
-  mov ss, ax
-  mov ds, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
+  xor eax, eax
+  mov ss, eax
+  mov ds, eax
+  mov es, eax
+  mov fs, eax
+  mov gs, eax
+
+  # Set up high mappings
+
+  lea rax, [PHYS_ADDR(high_pdpt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov [PHYS_ADDR(pml4) \
+       + ((ARCH_KERNEL_VMA_OFFSET >> X86_64_PML4_SHIFT) & X86_64_PTE_MASK) \
+       * X86_64_PT_ENTRY_SIZE], rax
+
+  # Map kernel at -2GiB
+
+  lea r8, [_kern_virt_start]
+
+  lea rax, [PHYS_ADDR(kernel_pdt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov rdi, r8
+  shr rdi, X86_64_PDPT_SHIFT
+  and rdi, X86_64_PTE_MASK
+  mov [PHYS_ADDR(high_pdpt) + X86_64_PT_ENTRY_SIZE * rdi], rax
+
+  # rcx = size of kernel, rounded up to nearest 2MiB
+  lea rcx, [_kern_virt_end + X86_64_PDT_PAGE_SIZE - 1]
+  sub rcx, r8
+  shr rcx, X86_64_PDT_SHIFT
+
+  lea rax, [PHYS_ADDR(_kern_virt_start)]
+  and rax, ~(X86_64_PDT_PAGE_SIZE - 1) # Round down to nearest 2MiB
+  or rax, X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE | X86_64_MMU_FLAG_LARGE
+
+  mov rdi, r8
+  shr rdi, X86_64_PDT_SHIFT
+  and rdi, X86_64_PTE_MASK
+
+.Lfill_kernel_pd:
+  mov [PHYS_ADDR(kernel_pdt) + X86_64_PT_ENTRY_SIZE * rdi], rax
+  add rax, X86_64_PDT_PAGE_SIZE
+  add rdi, X86_64_PT_ENTRY_SIZE
+  loop .Lfill_kernel_pd
+
   mov dword ptr [0xb8000], 0x074c # Display 'L' in light gray
   1: hlt
   jmp 1b
