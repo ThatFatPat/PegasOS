@@ -48,7 +48,7 @@ no_long_mode_error_string: .asciz "Error: PegasOS requires a 64-bit processor"
 
 .section .bootbss, "aw", @nobits
 
-# Space for early 1GiB identity page tables
+# Space for temporary low 1GiB mapping
 .align X86_64_PT_ALIGN
 early_low_pdpt:
 .skip X86_64_PT_SIZE
@@ -160,40 +160,23 @@ _start64:
   # Set up high mappings
 
   lea rax, [PHYS_ADDR(high_pdpt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  mov [PHYS_ADDR(pml4) \
-       + ((ARCH_KERNEL_VMA_OFFSET >> X86_64_PML4_SHIFT) & X86_64_PTE_MASK) \
+  mov [PHYS_ADDR(pml4) + X86_64_PML4_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
        * X86_64_PT_ENTRY_SIZE], rax
 
-  # Map kernel at -2GiB
+  # Early mapping of kernel at -2GiB: use existing low-1GiB table
 
-  lea r8, [_kern_virt_start]
+  lea rax, [early_low_pd + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov [PHYS_ADDR(high_pdpt) + X86_64_PDPT_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
+       * X86_64_PT_ENTRY_SIZE], rax
+  jmp high_entry
+  
+.size _start64, . - _start64
 
-  lea rax, [PHYS_ADDR(kernel_pdt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  mov rdi, r8
-  shr rdi, X86_64_PDPT_SHIFT
-  and rdi, X86_64_PTE_MASK
-  mov [PHYS_ADDR(high_pdpt) + X86_64_PT_ENTRY_SIZE * rdi], rax
+.text
 
-  # rcx = size of kernel in 2MiB blocks, rounded up
-  lea rcx, [_kern_virt_end + X86_64_PDT_PAGE_SIZE - 1]
-  sub rcx, r8
-  shr rcx, X86_64_PDT_SHIFT
-
-  lea rax, [PHYS_ADDR(_kern_virt_start)]
-  and rax, ~(X86_64_PDT_PAGE_SIZE - 1) # Round down to nearest 2MiB
-  or rax, X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE | X86_64_MMU_FLAG_LARGE
-
-  mov rdi, r8
-  shr rdi, X86_64_PDT_SHIFT
-  and rdi, X86_64_PTE_MASK
-
-.Lfill_kernel_pd:
-  mov [PHYS_ADDR(kernel_pdt) + X86_64_PT_ENTRY_SIZE * rdi], rax
-  add rax, X86_64_PDT_PAGE_SIZE
-  inc rdi
-  loop .Lfill_kernel_pd
-
+.type high_entry, @function
+high_entry:
   mov dword ptr [0xb8000], 0x074c # Display 'L' in light gray
   1: hlt
   jmp 1b
-.size _start64, . - _start64
+.size high_entry, . - high_entry
