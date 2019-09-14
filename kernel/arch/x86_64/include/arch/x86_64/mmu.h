@@ -6,6 +6,15 @@
 #define X86_64_PDT_SHIFT 21
 #define X86_64_PT_SHIFT 12
 
+#define X86_64_PML4_IDX_FROM_ADDR(addr) \
+  ((addr >> X86_64_PML4_SHIFT) & X86_64_PTE_MASK)
+#define X86_64_PDPT_IDX_FROM_ADDR(addr) \
+  ((addr >> X86_64_PDPT_SHIFT) & X86_64_PTE_MASK)
+#define X86_64_PDT_IDX_FROM_ADDR(addr) \
+  ((addr >> X86_64_PDT_SHIFT) & X86_64_PTE_MASK)
+#define X86_64_PT_IDX_FROM_ADDR(addr) \
+  ((addr >> X86_64_PT_SHIFT) & X86_64_PTE_MASK)
+
 #define X86_64_PAGE_SIZE (1 << X86_64_PT_SHIFT)      // 4KiB
 #define X86_64_PDT_PAGE_SIZE (1 << X86_64_PDT_SHIFT) // 2MiB
 
