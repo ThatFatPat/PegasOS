@@ -174,7 +174,7 @@ _start64:
   and rdi, X86_64_PTE_MASK
   mov [PHYS_ADDR(high_pdpt) + X86_64_PT_ENTRY_SIZE * rdi], rax
 
-  # rcx = size of kernel, rounded up to nearest 2MiB
+  # rcx = size of kernel in 2MiB blocks, rounded up
   lea rcx, [_kern_virt_end + X86_64_PDT_PAGE_SIZE - 1]
   sub rcx, r8
   shr rcx, X86_64_PDT_SHIFT
