@@ -1,7 +1,15 @@
+#include <arch/kernel_addrspace.h>
 #include <arch/x86_64/control_regs.h>
+#include <arch/x86_64/mmu.h>
 #include <stdint.h>
 
-extern "C" void x86_64_early_entry(uintptr_t multiboot_info_paddr) {
+extern "C" [[noreturn]] void x86_64_early_entry(
+    uintptr_t multiboot_info_paddr) {
+  arch::x86_64::mmu_init_phys_map();
   // Display L in light gray
-  *reinterpret_cast<uint16_t*>(0xb8000) = 0x700 | 'L';
+  *reinterpret_cast<uint16_t*>(ARCH_PHYS_MAP_BASE + 0xb8000) = 0x700 | 'L';
+
+  while (true) {
+    asm("hlt");
+  }
 }

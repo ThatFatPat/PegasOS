@@ -170,7 +170,5 @@ _start64:
   lea rsp, [early_stack + EARLY_STACK_SIZE]
   mov rdi, rsi
   call x86_64_early_entry
-  1: hlt
-  jmp 1b
 
 .size _start64, . - _start64
