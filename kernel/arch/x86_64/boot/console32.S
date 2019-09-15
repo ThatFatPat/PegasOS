@@ -13,9 +13,9 @@
 
 # Print null-terminated string.
 # EBX - Address of string, EDX - Current offset in VIDEO_MEMORY.
-.global print_string32
-.type print_string32, @function
-print_string32:
+.global console32_print
+.type console32_print, @function
+console32_print:
   push ebp
   mov ebp, esp
   push eax
@@ -41,11 +41,11 @@ print_string32:
   pop eax
   leave
   ret
-.size print_string32, . - print_string32
+.size console32_print, . - console32_print
 
-.global clear_screen32
-.type clear_screen32, @function
-clear_screen32:
+.global console32_clear
+.type console32_clear, @function
+console32_clear:
   push ebp
   mov ebp, esp
   push eax
@@ -61,4 +61,4 @@ clear_screen32:
   pop eax
   leave
   ret
-.size clear_screen32, . - print_string32
+.size console32_clear, . - console32_clear

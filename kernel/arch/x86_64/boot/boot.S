@@ -69,7 +69,7 @@ early_low_pd:
 .type _start32, @function
 _start32:
   lea esp, [PHYS_ADDR(early_stack) + EARLY_STACK_SIZE]
-  call clear_screen32
+  call console32_clear
   mov esi, ebx # preserve pointer to multiboot info
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz .Lno_mutliboot
@@ -80,12 +80,12 @@ _start32:
 .Lno_mutliboot: # Error: not loaded via multiboot2 protocol
   lea ebx, [multiboot_error_string]
   xor edx, edx
-  call print_string32
+  call console32_print
   jmp die
 .Lno_long_mode: # Error: 32-bit processor
   lea ebx, [no_long_mode_error_string]
   xor edx, edx
-  call print_string32
+  call console32_print
   jmp die
 .size _start32, . - _start32
 
