@@ -81,12 +81,14 @@ _start32:
   lea ebx, [multiboot_error_string]
   xor edx, edx
   call console32_print
-  jmp die
+  jmp .Ldie
 .Lno_long_mode: # Error: 32-bit processor
   lea ebx, [no_long_mode_error_string]
   xor edx, edx
   call console32_print
-  jmp die
+.Ldie:
+  hlt
+  jmp .Ldie
 .size _start32, . - _start32
 
 .type check_long_mode, @function
@@ -137,12 +139,6 @@ enter_long_mode:
   lgdt early_gdt_desc
   jmp EARLY_CODE_SEG:_start64
 .size enter_long_mode, . - enter_long_mode
-
-.type die, @function
-die: # RIP
-  hlt
-  jmp die
-.size die, . - die
 
 .code64
 
