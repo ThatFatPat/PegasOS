@@ -1,4 +1,8 @@
-set(ADDITIONAL_FLAGS -ffreestanding -fno-exceptions -fno-rtti -mcmodel=kernel -mno-red-zone)
+set(
+  ADDITIONAL_FLAGS
+  -ffreestanding -fno-exceptions -fno-rtti
+  -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
+)
 
 add_compile_options(${ADDITIONAL_FLAGS})
 add_link_options(${ADDITIONAL_FLAGS} -nostdlib -z max-page-size=0x1000)
