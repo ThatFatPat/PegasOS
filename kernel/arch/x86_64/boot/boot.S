@@ -3,6 +3,7 @@
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/mmu_constants.h>
+#include <asm.h>
 
 #include <multiboot2.h>
 
@@ -27,47 +28,63 @@ mb_header_end:
 
 .section .bootrodata, "a"
 
-early_gdt_start:
-.quad 0 # null entry
-# native long mode code
-# note: base and limit here are ignored, only flags matter
-.quad X86_64_GDT_ENTRY(0, 0, X86_64_GDT_FLAG_64, X86_64_GDT_ACCESS_PRESENT |
-                                                 X86_64_GDT_ACCESS_RING0 |
-                                                 X86_64_GDT_ACCESS_NON_SYSTEM |
-                                                 X86_64_GDT_ACCESS_EXEC)
+LOCAL_DATA(early_gdt)
+  .quad 0 # null entry
+  # native long mode code
+  # note: base and limit here are ignored, only flags matter
+  .quad X86_64_GDT_ENTRY(0, 0, X86_64_GDT_FLAG_64, X86_64_GDT_ACCESS_PRESENT |
+                                                   X86_64_GDT_ACCESS_RING0 |
+                                                   X86_64_GDT_ACCESS_NON_SYSTEM |
+                                                   X86_64_GDT_ACCESS_EXEC)
+DATA_END(early_gdt)
 early_gdt_end:
-.set EARLY_GDT_SIZE, early_gdt_end - early_gdt_start
-early_gdt_desc:
-.word EARLY_GDT_SIZE - 1
-.long early_gdt_start
+
+.set EARLY_GDT_SIZE, early_gdt_end - early_gdt
+
+LOCAL_DATA(early_gdt_desc)
+  .word EARLY_GDT_SIZE - 1
+  .long early_gdt
+DATA_END(early_gdt_desc)
 
 .set EARLY_CODE_SEG, X86_64_GDT_ENTRY_SIZE
 
-multiboot_error_string: .asciz "Error: PegasOS requires a multiboot2-compliant bootloader"
-no_long_mode_error_string: .asciz "Error: PegasOS requires a 64-bit processor"
+LOCAL_DATA(multiboot_error_string)
+  .asciz "Error: PegasOS requires a multiboot2-compliant bootloader"
+DATA_END(multiboot_error_string)
+
+
+LOCAL_DATA(long_mode_error_string)
+  .asciz "Error: PegasOS requires a 64-bit processor"
+DATA_END(long_mode_error_string)
 
 .section .bootbss, "aw", @nobits
 
 # Space for temporary low 1GiB mapping
-.align X86_64_PT_ALIGN
-early_low_pdpt:
-.skip X86_64_PT_SIZE
-early_low_pd:
-.skip X86_64_PT_SIZE
 
-.section .bss, "aw", @nobits
+.align X86_64_PT_ALIGN
+LOCAL_DATA(early_low_pdpt)
+  .skip X86_64_PT_SIZE
+DATA_END(early_low_pdpt)
+
+LOCAL_DATA(early_low_pd)
+  .skip X86_64_PT_SIZE
+DATA_END(early_low_pd)
+
+.bss
 
 .set EARLY_STACK_SIZE, 0x4000 # 16KiB
 .set EARLY_STACK_ALIGN, 0x10
-.comm early_stack, EARLY_STACK_SIZE, EARLY_STACK_ALIGN
+
+.align EARLY_STACK_ALIGN
+LOCAL_DATA(early_stack)
+  .skip EARLY_STACK_SIZE
+DATA_END(early_stack)
 
 .code32
 
 .section .boottext, "ax"
 
-.global _start32
-.type _start32, @function
-_start32:
+FUNC(_start32)
   lea esp, [PHYS_ADDR(early_stack) + EARLY_STACK_SIZE]
   call console32_clear
   mov esi, ebx # preserve pointer to multiboot info
@@ -83,16 +100,15 @@ _start32:
   call console32_print
   jmp .Ldie
 .Lno_long_mode: # Error: 32-bit processor
-  lea ebx, [no_long_mode_error_string]
+  lea ebx, [long_mode_error_string]
   xor edx, edx
   call console32_print
 .Ldie:
   hlt
   jmp .Ldie
-.size _start32, . - _start32
+FUNC_END(_start32)
 
-.type check_long_mode, @function
-check_long_mode:
+LOCAL_FUNC(check_long_mode)
   mov eax, X86_64_CPUID_FUNC_EXT_CPUID # Check for extended cpuid functions
   cpuid
   cmp eax, X86_64_CPUID_FUNC_EXT_CPUID
@@ -105,10 +121,9 @@ check_long_mode:
 1: # No long mode support
   xor eax, eax
   ret
-.size check_long_mode, . - check_long_mode
+FUNC_END(check_long_mode)
 
-.type enter_long_mode, @function
-enter_long_mode:
+LOCAL_FUNC(enter_long_mode)
   # Set up early 1GiB identity mapping
   lea eax, [early_low_pdpt + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [PHYS_ADDR(pml4)], eax
@@ -138,12 +153,11 @@ enter_long_mode:
 
   lgdt early_gdt_desc
   jmp EARLY_CODE_SEG:_start64
-.size enter_long_mode, . - enter_long_mode
+FUNC_END(enter_long_mode)
 
 .code64
 
-.type _start64, @function
-_start64:
+LOCAL_FUNC(_start64)
   xor eax, eax
   mov ss, eax
   mov ds, eax
@@ -166,5 +180,4 @@ _start64:
   lea rsp, [early_stack + EARLY_STACK_SIZE]
   mov rdi, rsi
   call x86_64_early_entry
-
-.size _start64, . - _start64
+FUNC_END(_start64)

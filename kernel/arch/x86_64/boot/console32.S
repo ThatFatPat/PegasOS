@@ -1,3 +1,5 @@
+#include <asm.h>
+
 .intel_syntax noprefix
 
 .code32
@@ -13,9 +15,7 @@
 
 # Print null-terminated string.
 # EBX - Address of string, EDX - Current offset in VIDEO_MEMORY.
-.global console32_print
-.type console32_print, @function
-console32_print:
+FUNC(console32_print)
   push ebp
   mov ebp, esp
   push eax
@@ -41,11 +41,9 @@ console32_print:
   pop eax
   leave
   ret
-.size console32_print, . - console32_print
+FUNC_END(console32_print)
 
-.global console32_clear
-.type console32_clear, @function
-console32_clear:
+FUNC(console32_clear)
   push ebp
   mov ebp, esp
   push eax
@@ -61,4 +59,4 @@ console32_clear:
   pop eax
   leave
   ret
-.size console32_clear, . - console32_clear
+FUNC_END(console32_clear)
