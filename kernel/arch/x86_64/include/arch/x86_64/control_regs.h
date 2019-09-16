@@ -7,6 +7,8 @@
 #define X86_64_CR0_PG (1 << 31)
 
 #define X86_64_CR4_PAE (1 << 5)
+#define X86_64_CR4_OSFXSR (1 << 9)
+#define X86_64_CR4_OXMMEXCPT (1 << 10)
 
 // MSRs
 
