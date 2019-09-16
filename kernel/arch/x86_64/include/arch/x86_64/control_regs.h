@@ -13,7 +13,9 @@
 // MSRs
 
 #define X86_64_MSR_EFER 0xC0000080
+#define X86_64_MSR_EFER_SCE (1 << 0)
 #define X86_64_MSR_EFER_LME (1 << 8)
+#define X86_64_MSR_EFER_NXE (1 << 11)
 
 #ifndef __ASSEMBLER__
 
