@@ -1,6 +1,7 @@
 #include <arch/x86_64/mp.h>
 
 #include <arch/x86_64/control_regs.h>
+#include <arch/x86_64/mmu.h>
 
 namespace arch::x86_64 {
 namespace {
@@ -20,6 +21,7 @@ void init_cpu_common() {
 } // namespace
 
 void init_bsp() {
+  mmu_init_phys_map();
   init_cpu_common();
 }
 

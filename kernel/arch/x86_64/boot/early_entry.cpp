@@ -6,7 +6,6 @@
 
 extern "C" [[noreturn]] void x86_64_early_entry(
     uintptr_t multiboot_info_paddr) {
-  arch::x86_64::mmu_init_phys_map();
   arch::x86_64::init_bsp();
 
   // Display L in light gray
