@@ -12,6 +12,9 @@ set(CMAKE_ASM_FLAGS_RELWITHDEBINFO "-g")
 
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os")
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 add_compile_options(-Wall -Wextra)
 
 add_subdirectory(kernel)
