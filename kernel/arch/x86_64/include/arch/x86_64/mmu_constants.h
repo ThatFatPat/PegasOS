@@ -26,5 +26,5 @@
 #define X86_64_MMU_FLAG_PRESENT (1 << 0)
 #define X86_64_MMU_FLAG_WRITE (1 << 1)
 #define X86_64_MMU_FLAG_USER (1 << 2)
-#define X86_64_MMU_FLAG_NX (1 << 63)
+#define X86_64_MMU_FLAG_NX (1ull << 63)
 #define X86_64_MMU_FLAG_LARGE (1 << 7)
