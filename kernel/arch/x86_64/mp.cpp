@@ -21,7 +21,6 @@ void init_cpu_common() {
 } // namespace
 
 void init_bsp() {
-  mmu_init_phys_map();
   init_cpu_common();
 }
 

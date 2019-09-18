@@ -25,7 +25,8 @@ void flush_tlb() {
 } // namespace
 
 void mmu_init_phys_map() {
-  constexpr uint64_t flags = X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE;
+  constexpr uint64_t flags =
+      X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE | X86_64_MMU_FLAG_NX;
 
   high_pdpt[X86_64_PDPT_IDX_FROM_ADDR(ARCH_PHYS_MAP_BASE)] =
       (reinterpret_cast<uintptr_t>(phys_map_pdt) - ARCH_KERNEL_VMA_OFFSET) |
