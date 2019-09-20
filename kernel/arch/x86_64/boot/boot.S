@@ -169,7 +169,7 @@ LOCAL_FUNC(_start64)
   # Set up high mappings
 
   lea rax, [PHYS_ADDR(high_pdpt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  mov [PHYS_ADDR(pml4) + X86_64_PML4_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
+  mov [PHYS_ADDR(pml4) + X86_64_PML4_IDX_FROM_ADDR(ARCH_KERNEL_VSPACE_BASE) \
        * X86_64_PT_ENTRY_SIZE], rax
 
   # Early mapping of kernel at -2GiB: use existing low-1GiB table
