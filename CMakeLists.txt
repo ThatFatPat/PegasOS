@@ -2,6 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 
 project(PegasOS CXX ASM)
 
+cmake_policy(SET CMP0076 NEW)
+
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 set(CMAKE_ASM_FLAGS_DEBUG "-g")
 

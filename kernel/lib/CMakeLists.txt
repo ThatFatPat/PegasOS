@@ -1,1 +1,1 @@
-add_library(support string.cpp)
+target_sources(kernel PRIVATE string.cpp)
