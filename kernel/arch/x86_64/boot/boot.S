@@ -66,10 +66,6 @@ LOCAL_DATA(early_low_pdpt)
   .skip X86_64_PT_SIZE
 DATA_END(early_low_pdpt)
 
-LOCAL_DATA(early_low_pd)
-  .skip X86_64_PT_SIZE
-DATA_END(early_low_pd)
-
 .bss
 
 .set EARLY_STACK_SIZE, 0x4000 # 16KiB
@@ -79,6 +75,11 @@ DATA_END(early_low_pd)
 LOCAL_DATA(early_stack)
   .skip EARLY_STACK_SIZE
 DATA_END(early_stack)
+
+.align X86_64_PT_ALIGN
+LOCAL_DATA(early_low_pd)
+  .skip X86_64_PT_SIZE
+DATA_END(early_low_pd)
 
 .code32
 
@@ -127,14 +128,14 @@ LOCAL_FUNC(enter_long_mode)
   # Set up early 1GiB identity mapping
   lea eax, [early_low_pdpt + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [PHYS_ADDR(pml4)], eax
-  lea eax, [early_low_pd + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  lea eax, [PHYS_ADDR(early_low_pd) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [early_low_pdpt], eax
 
   mov eax, X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE | X86_64_MMU_FLAG_LARGE
   xor ecx, ecx
 
 .Lfill_low_pd:
-  mov [early_low_pd + X86_64_PT_ENTRY_SIZE * ecx], eax
+  mov [PHYS_ADDR(early_low_pd) + X86_64_PT_ENTRY_SIZE * ecx], eax
   add eax, X86_64_PDT_PAGE_SIZE
   inc ecx
   cmp ecx, X86_64_PT_ENTRIES
@@ -173,7 +174,7 @@ LOCAL_FUNC(_start64)
 
   # Early mapping of kernel at -2GiB: use existing low-1GiB table
 
-  lea rax, [early_low_pd + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  lea rax, [PHYS_ADDR(early_low_pd) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [PHYS_ADDR(high_pdpt) + X86_64_PDPT_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
        * X86_64_PT_ENTRY_SIZE], rax
   
