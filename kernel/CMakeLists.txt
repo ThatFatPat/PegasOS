@@ -1,4 +1,4 @@
-add_executable(kernel dummy.cpp)
+add_executable(kernel "")
 
 target_include_directories(kernel PRIVATE include)
 target_link_libraries(kernel PRIVATE gcc)
