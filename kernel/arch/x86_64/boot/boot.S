@@ -85,9 +85,11 @@ DATA_END(early_low_pd)
 .section .boottext, "ax"
 
 FUNC(_start32)
+  # Stash pointer to multiboot info
+  mov [PHYS_ADDR(multiboot_info_phys_addr)], ebx
+  
   lea esp, [PHYS_ADDR(early_stack) + EARLY_STACK_SIZE]
   call console32_clear
-  mov esi, ebx # preserve pointer to multiboot info
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
   jnz .Lno_mutliboot
   call check_long_mode
@@ -176,7 +178,7 @@ LOCAL_FUNC(_start64)
   lea rax, [PHYS_ADDR(early_low_pd) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [PHYS_ADDR(high_pdpt) + X86_64_PDPT_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
        * X86_64_PT_ENTRY_SIZE], rax
-  
+
   lea rsp, [early_stack + EARLY_STACK_SIZE]
   call kernel_main
 FUNC_END(_start64)
