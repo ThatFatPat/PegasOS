@@ -45,12 +45,16 @@ SECTIONS {
   .data : AT(ADDR(.data) - _kern_virt_start + _bootseg_end) {
     *(.data)
   }
+  . = ALIGN(4K);
+  _kern_data_end = .;
+
+  _kern_bss_start = .;
   .bss : AT(ADDR(.bss) - _kern_virt_start + _bootseg_end) {
     *(COMMON)
     *(.bss)
   }
   . = ALIGN(4K);
-  _kern_data_end = .;
+  _kern_bss_end = .;
 
   _kern_virt_end = .;
   _kern_phys_end = . - _kern_virt_end + _bootseg_end;
