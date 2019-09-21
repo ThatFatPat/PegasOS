@@ -3,9 +3,8 @@
 #include <arch/x86_64/cpuid.h>
 #include <arch/x86_64/gdt.h>
 #include <arch/x86_64/mmu_constants.h>
+#include <arch/x86_64/multiboot2.h>
 #include <asm.h>
-
-#include <multiboot2.h>
 
 #define PHYS_ADDR(addr) ((addr) - ARCH_KERNEL_VMA_OFFSET)
 
