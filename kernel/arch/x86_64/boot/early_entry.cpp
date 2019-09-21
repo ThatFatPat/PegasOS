@@ -1,5 +1,4 @@
 #include <arch/kernel_vspace.h>
-#include <arch/x86_64/control_regs.h>
 #include <arch/x86_64/mmu.h>
 #include <arch/x86_64/mp.h>
 #include <stdint.h>
