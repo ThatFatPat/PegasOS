@@ -6,6 +6,7 @@ target_sources(
   boot/early_entry.cpp
   boot/boot.S
   boot/console32.S
+  init.cpp
   mmu.cpp
   mp.cpp
 )

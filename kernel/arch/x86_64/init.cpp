@@ -1,0 +1,1 @@
+void* multiboot_info;
