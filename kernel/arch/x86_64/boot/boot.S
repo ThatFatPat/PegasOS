@@ -178,6 +178,5 @@ LOCAL_FUNC(_start64)
        * X86_64_PT_ENTRY_SIZE], rax
   
   lea rsp, [early_stack + EARLY_STACK_SIZE]
-  mov rdi, rsi
-  call x86_64_early_entry
+  call kernel_main
 FUNC_END(_start64)
