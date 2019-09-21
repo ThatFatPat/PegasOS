@@ -2,7 +2,7 @@
 
 namespace arch {
 
-inline void halt() {
+[[noreturn]] inline void halt() {
   asm("cli");
   while (true) {
     asm("hlt");
