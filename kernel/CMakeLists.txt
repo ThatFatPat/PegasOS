@@ -1,7 +1,7 @@
 add_executable(kernel main.cpp)
 
 target_include_directories(kernel PRIVATE include)
-target_link_libraries(kernel PRIVATE gcc)
+target_link_libraries(kernel PRIVATE gcc psl)
 
 set(ADDITIONAL_OPTIONS -ffreestanding -fno-exceptions -fno-rtti)
 

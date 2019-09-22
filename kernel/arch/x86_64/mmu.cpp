@@ -1,7 +1,7 @@
 #include <arch/kernel_vspace.h>
 #include <arch/x86_64/control_regs.h>
 #include <arch/x86_64/mmu.h>
-#include <ksl/iterator.h>
+#include <psl/iterator.h>
 
 #include <stddef.h>
 
@@ -31,7 +31,7 @@ void mmu_init_phys_map() {
       (reinterpret_cast<uintptr_t>(phys_map_pd) - ARCH_KERNEL_VMA_OFFSET) |
       flags;
 
-  for (size_t i = 0; i < ksl::size(phys_map_pd); i++) {
+  for (size_t i = 0; i < psl::size(phys_map_pd); i++) {
     uintptr_t paddr = i * X86_64_PDT_PAGE_SIZE;
     phys_map_pd[i] = paddr | flags | X86_64_MMU_FLAG_LARGE;
   }
