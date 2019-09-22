@@ -14,4 +14,4 @@ target_link_options(
 )
 
 add_subdirectory(arch/x86_64)
-add_subdirectory(lib/libc)
+add_subdirectory(lib)
