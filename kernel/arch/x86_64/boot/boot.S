@@ -51,7 +51,6 @@ LOCAL_DATA(multiboot_error_string)
   .asciz "Error: PegasOS requires a multiboot2-compliant bootloader"
 DATA_END(multiboot_error_string)
 
-
 LOCAL_DATA(long_mode_error_string)
   .asciz "Error: PegasOS requires a 64-bit processor"
 DATA_END(long_mode_error_string)
