@@ -5,6 +5,7 @@
 #undef memcpy
 #undef memmove
 #undef memset
+#undef strlen
 
 void* memcpy(void* __restrict dest, const void* src, size_t count) {
   uint8_t* ch_dest = static_cast<uint8_t*>(dest);
@@ -42,4 +43,11 @@ void* memset(void* dest, int ch, size_t count) {
   }
 
   return dest;
+}
+
+size_t strlen(const char* str) {
+  size_t len = 0;
+  for (; *str; str++, len++) {
+  }
+  return len;
 }
