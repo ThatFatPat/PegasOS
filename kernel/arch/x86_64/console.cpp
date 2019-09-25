@@ -69,4 +69,10 @@ void console_clear() {
   curr_col = 0;
 }
 
+void console_write(psl::string_view str) {
+  for (char c : str) {
+    do_putc(c);
+  }
+}
+
 } // namespace arch
