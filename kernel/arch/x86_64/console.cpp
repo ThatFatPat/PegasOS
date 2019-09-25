@@ -57,8 +57,19 @@ void advance_col() {
 }
 
 void do_putc(char c) {
-  *get_console_word(curr_row, curr_col) = c | default_attr;
-  advance_col();
+  switch (c) {
+  case '\r':
+    curr_col = 0;
+    break;
+  case '\n':
+    advance_line();
+    break;
+  default:
+    if (c >= ' ') {
+      *get_console_word(curr_row, curr_col) = c | default_attr;
+      advance_col();
+    }
+  }
 }
 
 } // namespace
