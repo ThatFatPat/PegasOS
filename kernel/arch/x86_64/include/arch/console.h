@@ -2,6 +2,7 @@
 
 namespace arch {
 
+void console_init();
 void console_clear();
 void console_write(psl::string_view str);
 

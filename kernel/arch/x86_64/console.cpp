@@ -1,6 +1,7 @@
 #include <arch/console.h>
 
 #include <arch/kernel_vspace.h>
+#include <arch/x86_64/ioport.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -8,6 +9,17 @@ namespace arch {
 namespace {
 
 using console_word_t = volatile uint16_t;
+
+constexpr uint16_t port_vga_reg_num = 0x3d4;
+constexpr uint16_t port_vga_reg_val = 0x3d5;
+
+constexpr uint8_t vga_reg_cursor_start = 0xa;
+constexpr uint8_t vga_reg_cursor_end = 0xb;
+constexpr uint8_t vga_reg_cursor_loc_high = 0xe;
+constexpr uint8_t vga_reg_cursor_loc_low = 0xf;
+
+constexpr uint8_t cursor_scanline_start = 0x9;
+constexpr uint8_t cursor_scanline_end = 0xc;
 
 constexpr console_word_t default_attr = 0x700; // Light gray on black
 
@@ -18,6 +30,28 @@ constexpr size_t console_cols = 80;
 
 size_t curr_row;
 size_t curr_col;
+
+void enable_cursor() {
+  x86_64::outb(port_vga_reg_num, vga_reg_cursor_start);
+  x86_64::outb(port_vga_reg_val, cursor_scanline_start);
+
+  x86_64::outb(port_vga_reg_num, vga_reg_cursor_end);
+  x86_64::outb(port_vga_reg_val, cursor_scanline_end);
+}
+
+void set_cursor_pos(size_t row, size_t col) {
+  auto pos = static_cast<uint16_t>(row * console_cols + col);
+
+  x86_64::outb(port_vga_reg_num, vga_reg_cursor_loc_low);
+  x86_64::outb(port_vga_reg_val, pos & 0xff);
+
+  x86_64::outb(port_vga_reg_num, vga_reg_cursor_loc_high);
+  x86_64::outb(port_vga_reg_val, (pos >> 8) & 0xff);
+}
+
+void update_cursor() {
+  set_cursor_pos(curr_row, curr_col);
+}
 
 console_word_t* get_console_word(size_t row, size_t col) {
   return reinterpret_cast<console_word_t*>(ARCH_PHYS_MAP_BASE +
@@ -78,16 +112,23 @@ void do_putc(char c) {
 
 } // namespace
 
+void console_init() {
+  enable_cursor();
+  console_clear();
+}
+
 void console_clear() {
   clear_rows(0, console_rows);
   curr_row = 0;
   curr_col = 0;
+  update_cursor();
 }
 
 void console_write(psl::string_view str) {
   for (char c : str) {
     do_putc(c);
   }
+  update_cursor();
 }
 
 } // namespace arch
