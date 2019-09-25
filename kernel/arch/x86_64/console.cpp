@@ -7,7 +7,7 @@
 namespace arch {
 namespace {
 
-using console_word_t = uint16_t;
+using console_word_t = volatile uint16_t;
 
 constexpr console_word_t default_attr = 0x700; // Light gray on black
 
@@ -35,8 +35,11 @@ void scroll(size_t lines) {
   size_t move_region_rows = console_rows - lines;
   size_t region_size = move_region_rows * console_cols;
 
-  memmove(get_console_word(0, 0), get_console_word(lines, 0),
-          region_size * sizeof(console_word_t));
+  // Note: can't memmove as console_word_t is volatile
+  for (size_t i = 0; i < region_size; i++) {
+    *get_console_word(0, i) = *get_console_word(lines, i);
+  }
+
   clear_rows(move_region_rows, lines);
 }
 
