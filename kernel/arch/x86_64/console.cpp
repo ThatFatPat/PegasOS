@@ -124,7 +124,12 @@ void console_clear() {
   update_cursor();
 }
 
-void console_write(psl::string_view str) {
+void console_putc(char c) {
+  do_putc(c);
+  update_cursor();
+}
+
+void console_puts(psl::string_view str) {
   for (char c : str) {
     do_putc(c);
   }
