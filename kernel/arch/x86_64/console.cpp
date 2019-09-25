@@ -25,7 +25,7 @@ console_word_t* get_console_word(size_t row, size_t col) {
          console_cols * row + col;
 }
 
-void zero_rows(size_t row, size_t count) {
+void clear_rows(size_t row, size_t count) {
   memset(get_console_word(row, 0), 0,
          count * console_cols * sizeof(console_word_t));
 }
@@ -36,7 +36,7 @@ void scroll(size_t lines) {
 
   memmove(get_console_word(0, 0), get_console_word(lines, 0),
           region_size * sizeof(console_word_t));
-  zero_rows(move_region_rows, lines);
+  clear_rows(move_region_rows, lines);
 }
 
 void advance_line() {
@@ -75,7 +75,7 @@ void do_putc(char c) {
 } // namespace
 
 void console_clear() {
-  zero_rows(0, console_rows);
+  clear_rows(0, console_rows);
   curr_row = 0;
   curr_col = 0;
 }
