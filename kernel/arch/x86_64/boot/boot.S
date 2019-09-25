@@ -128,6 +128,7 @@ LOCAL_FUNC(enter_long_mode)
   # Set up early 1GiB identity mapping
   lea eax, [early_low_pdpt + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [PHYS_ADDR(pml4)], eax
+
   lea eax, [PHYS_ADDR(early_low_pd) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
   mov [early_low_pdpt], eax
 
@@ -140,6 +141,15 @@ LOCAL_FUNC(enter_long_mode)
   inc ecx
   cmp ecx, X86_64_PT_ENTRIES
   jne .Lfill_low_pd
+
+  # Set up mapping of kernel at -2GiB: use existing low-1GiB table
+  lea eax, [PHYS_ADDR(high_pdpt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov [PHYS_ADDR(pml4) + X86_64_PML4_IDX_FROM_ADDR(ARCH_KERNEL_VSPACE_BASE) \
+       * X86_64_PT_ENTRY_SIZE], eax
+
+  lea eax, [PHYS_ADDR(early_low_pd) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
+  mov [PHYS_ADDR(high_pdpt) + X86_64_PDPT_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
+       * X86_64_PT_ENTRY_SIZE], eax
 
   lea eax, [PHYS_ADDR(pml4)]
   mov cr3, eax
@@ -165,19 +175,6 @@ LOCAL_FUNC(_start64)
   mov es, eax
   mov fs, eax
   mov gs, eax
-
-  # Set up high mappings
-
-  lea rax, [PHYS_ADDR(high_pdpt) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  mov [PHYS_ADDR(pml4) + X86_64_PML4_IDX_FROM_ADDR(ARCH_KERNEL_VSPACE_BASE) \
-       * X86_64_PT_ENTRY_SIZE], rax
-
-  # Early mapping of kernel at -2GiB: use existing low-1GiB table
-
-  lea rax, [PHYS_ADDR(early_low_pd) + X86_64_MMU_FLAG_PRESENT | X86_64_MMU_FLAG_WRITE]
-  mov [PHYS_ADDR(high_pdpt) + X86_64_PDPT_IDX_FROM_ADDR(ARCH_KERNEL_VMA_OFFSET) \
-       * X86_64_PT_ENTRY_SIZE], rax
-
   lea rsp, [early_stack + EARLY_STACK_SIZE]
   call kernel_main
 FUNC_END(_start64)
