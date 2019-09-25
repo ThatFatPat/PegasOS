@@ -26,8 +26,9 @@ console_word_t* get_console_word(size_t row, size_t col) {
 }
 
 void clear_rows(size_t row, size_t count) {
-  memset(get_console_word(row, 0), 0,
-         count * console_cols * sizeof(console_word_t));
+  for (size_t i = 0; i < console_cols * count; i++) {
+    *get_console_word(row, i) = default_attr;
+  }
 }
 
 void scroll(size_t lines) {
