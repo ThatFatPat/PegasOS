@@ -9,15 +9,15 @@ namespace {
 
 using console_word_t = uint16_t;
 
+constexpr console_word_t default_color = 7; // Light gray
+
 constexpr uintptr_t console_mem_phys_addr = 0xb8000;
 
 constexpr size_t console_rows = 25;
 constexpr size_t console_cols = 80;
 
-struct pos {
-  size_t row;
-  size_t col;
-} curr_pos;
+size_t curr_row;
+size_t curr_col;
 
 console_word_t* get_console_word(size_t row, size_t col) {
   return reinterpret_cast<console_word_t*>(ARCH_PHYS_MAP_BASE +
@@ -25,13 +25,48 @@ console_word_t* get_console_word(size_t row, size_t col) {
          console_cols * row + col;
 }
 
+void zero_rows(size_t row, size_t count) {
+  memset(get_console_word(row, 0), 0,
+         count * console_cols * sizeof(console_word_t));
+}
+
+void scroll(size_t lines) {
+  size_t move_region_rows = console_rows - lines;
+  size_t region_size = move_region_rows * console_cols;
+
+  memmove(get_console_word(0, 0), get_console_word(lines, 0),
+          region_size * sizeof(console_word_t));
+  zero_rows(move_region_rows, lines);
+}
+
+void advance_line() {
+  curr_col = 0;
+  if (curr_row < console_rows - 1) {
+    curr_row++;
+  } else {
+    scroll(1);
+  }
+}
+
+void advance_col() {
+  if (curr_col < console_cols - 1) {
+    curr_col++;
+  } else {
+    advance_line();
+  }
+}
+
+void do_putc(char c) {
+  *get_console_word(curr_row, curr_col) = c | default_color;
+  advance_col();
+}
+
 } // namespace
 
 void console_clear() {
-  memset(get_console_word(0, 0), 0,
-         console_rows * console_cols * sizeof(console_word_t));
-  curr_pos.row = 0;
-  curr_pos.col = 0;
+  zero_rows(0, console_rows);
+  curr_row = 0;
+  curr_col = 0;
 }
 
 } // namespace arch
