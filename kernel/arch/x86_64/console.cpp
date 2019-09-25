@@ -9,7 +9,7 @@ namespace {
 
 using console_word_t = uint16_t;
 
-constexpr console_word_t default_color = 7; // Light gray
+constexpr console_word_t default_attr = 0x700; // Light gray on black
 
 constexpr uintptr_t console_mem_phys_addr = 0xb8000;
 
@@ -57,7 +57,7 @@ void advance_col() {
 }
 
 void do_putc(char c) {
-  *get_console_word(curr_row, curr_col) = c | default_color;
+  *get_console_word(curr_row, curr_col) = c | default_attr;
   advance_col();
 }
 
