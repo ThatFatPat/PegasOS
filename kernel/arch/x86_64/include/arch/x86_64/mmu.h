@@ -5,7 +5,7 @@
 
 namespace arch::x86_64 {
 
-using pt_entry_t = uint64_t;
+using pt_entry_t = volatile uint64_t;
 
 void mmu_init_phys_map();
 

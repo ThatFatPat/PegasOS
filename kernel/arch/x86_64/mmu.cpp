@@ -1,17 +1,14 @@
+#include <arch/x86_64/mmu.h>
+
 #include <arch/kernel_vspace.h>
 #include <arch/x86_64/control_regs.h>
-#include <arch/x86_64/mmu.h>
 #include <psl/iterator.h>
 
 #include <stddef.h>
 
-alignas(
-    X86_64_PT_ALIGN) volatile arch::x86_64::pt_entry_t pml4[X86_64_PT_ENTRIES];
-
-alignas(X86_64_PT_ALIGN) volatile arch::x86_64::pt_entry_t
-    high_pdpt[X86_64_PT_ENTRIES];
-
-alignas(X86_64_PT_ALIGN) volatile arch::x86_64::pt_entry_t
+alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t pml4[X86_64_PT_ENTRIES];
+alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t high_pdpt[X86_64_PT_ENTRIES];
+alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t
     phys_map_pd[64 * X86_64_PT_ENTRIES];
 
 namespace arch::x86_64 {
