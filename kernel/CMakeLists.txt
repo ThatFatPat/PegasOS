@@ -13,5 +13,9 @@ target_link_options(
   -z max-page-size=0x1000
 )
 
+if (CMAKE_BUILD_TYPE MATCHES Rel AND NOT PEGASOS_NO_KERNEL_LTO)
+  set_target_properties(kernel PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 add_subdirectory(arch/x86_64)
 add_subdirectory(lib)
