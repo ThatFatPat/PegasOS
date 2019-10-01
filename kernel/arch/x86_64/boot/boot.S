@@ -84,29 +84,22 @@ DATA_END(early_low_pd)
 .section .boottext, "ax"
 
 FUNC(_start32)
-  # Stash pointer to multiboot info
-  mov [PHYS_ADDR(multiboot_info_phys_addr)], ebx
-  
+  mov [PHYS_ADDR(multiboot_info_phys_addr)], ebx # Stash pointer to multiboot info
   lea esp, [PHYS_ADDR(early_stack) + EARLY_STACK_SIZE]
-  call console32_clear
-  cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
-  jnz .Lno_mutliboot
-  call check_long_mode
-  test al, al
-  jz .Lno_long_mode
-  jmp  enter_long_mode
-.Lno_mutliboot: # Error: not loaded via multiboot2 protocol
   lea ebx, [multiboot_error_string]
-  xor edx, edx
-  call console32_print
-  jmp .Ldie
-.Lno_long_mode: # Error: 32-bit processor
+  cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
+  jnz .Lpanic
+  call check_long_mode
   lea ebx, [long_mode_error_string]
+  test al, al
+  jz .Lpanic
+  jmp  enter_long_mode
+.Lpanic:
+  call console32_clear
   xor edx, edx
   call console32_print
-.Ldie:
-  hlt
-  jmp .Ldie
+  1: hlt
+  jmp 1b
 FUNC_END(_start32)
 
 LOCAL_FUNC(check_long_mode)
