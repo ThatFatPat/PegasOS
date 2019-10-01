@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 
 namespace arch::x86_64 {

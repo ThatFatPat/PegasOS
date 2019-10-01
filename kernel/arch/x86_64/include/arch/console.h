@@ -1,3 +1,5 @@
+#pragma once
+
 #include <psl/string_view.h>
 
 namespace arch {
