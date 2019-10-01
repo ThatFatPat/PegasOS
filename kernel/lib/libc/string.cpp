@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include <psl/byte.h>
+#include <psl/util.h>
 #include <stdint.h>
 
 #undef memcpy

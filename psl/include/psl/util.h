@@ -1,7 +1,6 @@
 #pragma once
 
 #include <psl/type_traits.h>
-
 #include <stdint.h>
 
 namespace psl {
