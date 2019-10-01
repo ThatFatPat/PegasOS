@@ -2,8 +2,8 @@
 
 #include <arch/kernel_vspace.h>
 #include <arch/x86_64/control_regs.h>
-#include <psl/iterator.h>
 
+#include <psl/iterator.h>
 #include <stddef.h>
 
 alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t pml4[X86_64_PT_ENTRIES];
