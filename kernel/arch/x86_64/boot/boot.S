@@ -66,7 +66,7 @@ DATA_END(early_low_pdpt)
 
 .bss
 
-.set EARLY_STACK_SIZE, 0x4000 # 16KiB
+.set EARLY_STACK_SIZE, 0x1000 # 4KiB
 .set EARLY_STACK_ALIGN, 0x10
 
 .align EARLY_STACK_ALIGN
