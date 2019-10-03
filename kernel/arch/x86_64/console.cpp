@@ -22,7 +22,7 @@ constexpr uint8_t vga_reg_cursor_loc_low = 0xf;
 constexpr uint8_t cursor_scanline_start = 0x9;
 constexpr uint8_t cursor_scanline_end = 0xc;
 
-constexpr console_word_t default_attr = 0x700; // Light gray on black
+constexpr uint16_t default_attr = 0x700; // Light gray on black
 
 constexpr uintptr_t console_mem_phys_addr = 0xb8000;
 
