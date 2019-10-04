@@ -1,7 +1,7 @@
 #include <arch/console.h>
 
-#include <arch/kernel_vspace.h>
 #include <arch/x86_64/ioport.h>
+#include <mm/phys.h>
 
 #include <stdint.h>
 #include <string.h>
@@ -24,7 +24,7 @@ constexpr uint8_t cursor_scanline_end = 0xc;
 
 constexpr uint16_t default_attr = 0x700; // Light gray on black
 
-constexpr uintptr_t console_mem_phys_addr = 0xb8000;
+constexpr mm::phys_addr_t console_mem_phys_addr = 0xb8000;
 
 constexpr size_t console_rows = 25;
 constexpr size_t console_cols = 80;
@@ -55,8 +55,8 @@ void update_cursor() {
 }
 
 console_word_t* get_console_word(size_t row, size_t col) {
-  return reinterpret_cast<console_word_t*>(ARCH_PHYS_MAP_BASE +
-                                           console_mem_phys_addr) +
+  return static_cast<console_word_t*>(
+             mm::phys_addr_to_phys_map(console_mem_phys_addr)) +
          console_cols * row + col;
 }
 
