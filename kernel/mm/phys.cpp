@@ -4,7 +4,7 @@
 
 namespace mm {
 
-void* phys_addr_to_phys_map(phys_addr_t phys) {
+void* paddr_to_phys_map(phys_addr_t phys) {
   if (phys >= ARCH_PHYS_MAP_SIZE) {
     return nullptr;
   }

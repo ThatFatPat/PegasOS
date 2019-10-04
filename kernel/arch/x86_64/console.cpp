@@ -56,7 +56,7 @@ void update_cursor() {
 
 console_word_t* get_console_word(size_t row, size_t col) {
   return static_cast<console_word_t*>(
-             mm::phys_addr_to_phys_map(console_mem_phys_addr)) +
+             mm::paddr_to_phys_map(console_mem_phys_addr)) +
          console_cols * row + col;
 }
 
