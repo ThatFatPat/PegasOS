@@ -4,6 +4,6 @@
 
 namespace mm {
 
-void* paddr_to_phys_map(phys_addr_t phys);
+void* paddr_to_phys_map(phys_addr_t paddr);
 
 } // namespace mm

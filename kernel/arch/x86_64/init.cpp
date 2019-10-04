@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 // Set by boot.S
-uintptr_t multiboot_info_phys_addr;
+mm::phys_addr_t multiboot_info_paddr;
 
 namespace arch {
 namespace {
@@ -27,7 +27,7 @@ void process_multiboot_tag(uint32_t type, const void* raw_tag) {
 
 void process_multiboot_info() {
   const auto* info = static_cast<const psl::byte*>(
-      mm::paddr_to_phys_map(multiboot_info_phys_addr));
+      mm::paddr_to_phys_map(multiboot_info_paddr));
 
   // Note: this is okay as info is properly aligned and psl::byte allows
   // aliasing.

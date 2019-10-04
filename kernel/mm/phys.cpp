@@ -4,11 +4,11 @@
 
 namespace mm {
 
-void* paddr_to_phys_map(phys_addr_t phys) {
-  if (phys >= ARCH_PHYS_MAP_SIZE) {
+void* paddr_to_phys_map(phys_addr_t paddr) {
+  if (paddr >= ARCH_PHYS_MAP_SIZE) {
     return nullptr;
   }
-  return reinterpret_cast<void*>(phys + ARCH_PHYS_MAP_BASE);
+  return reinterpret_cast<void*>(paddr + ARCH_PHYS_MAP_BASE);
 }
 
 } // namespace mm

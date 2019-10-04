@@ -84,7 +84,7 @@ DATA_END(early_low_pd)
 .section .boottext, "ax"
 
 FUNC(_start32)
-  mov [PHYS_ADDR(multiboot_info_phys_addr)], ebx # Stash pointer to multiboot info
+  mov [PHYS_ADDR(multiboot_info_paddr)], ebx # Stash pointer to multiboot info
   lea esp, [PHYS_ADDR(early_stack) + EARLY_STACK_SIZE]
   lea ebx, [multiboot_error_string]
   cmp eax, MULTIBOOT2_BOOTLOADER_MAGIC
