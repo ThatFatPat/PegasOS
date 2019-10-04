@@ -1,8 +1,8 @@
 #include <arch/console.h>
-#include <arch/kernel_vspace.h>
 #include <arch/x86_64/mmu.h>
 #include <arch/x86_64/mp.h>
 #include <arch/x86_64/multiboot2.h>
+#include <mm/phys.h>
 
 #include <psl/numeric.h>
 #include <psl/util.h>
@@ -26,8 +26,8 @@ void process_multiboot_tag(uint32_t type, const void* raw_tag) {
 }
 
 void process_multiboot_info() {
-  const auto* info = reinterpret_cast<const psl::byte*>(
-      multiboot_info_phys_addr + ARCH_PHYS_MAP_BASE);
+  const auto* info = static_cast<const psl::byte*>(
+      mm::paddr_to_phys_map(multiboot_info_phys_addr));
 
   // Note: this is okay as info is properly aligned and psl::byte allows
   // aliasing.
