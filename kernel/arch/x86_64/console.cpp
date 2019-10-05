@@ -78,7 +78,7 @@ constexpr uint16_t default_attr = 0x700;
 /**
  * Physical address of console video memory.
  */
-constexpr mm::phys_addr_t console_mem_phys_addr = 0xb8000;
+constexpr mm::phys_addr_t console_mem_paddr = 0xb8000;
 
 
 /**
@@ -141,7 +141,7 @@ void update_cursor() {
  */
 console_word_t* get_console_word(size_t row, size_t col) {
   return static_cast<console_word_t*>(
-             mm::paddr_to_phys_map(console_mem_phys_addr)) +
+             mm::paddr_to_phys_map(console_mem_paddr)) +
          console_cols * row + col;
 }
 
