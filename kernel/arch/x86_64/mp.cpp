@@ -1,7 +1,7 @@
 /**
  * @addtogroup x86_64
  * @{
- * @file mp.cpp
+ * @file mp.cpp Multi-processor implementation
  */
 
 #include <arch/x86_64/mp.h>
@@ -12,6 +12,10 @@
 namespace arch::x86_64 {
 namespace {
 
+/**
+ * Perform common cpu initialization, including setting up control registers and
+ * status flags.
+ */
 void init_cpu_common() {
   // Enable NX bit and syscall instruction
   uint64_t ia32_efer = read_msr(X86_64_MSR_EFER);
