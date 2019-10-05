@@ -1,7 +1,7 @@
 /**
  * @addtogroup psl
  * @{
- * @file iterator.h Iterator utilites, inspired by <iterator>.
+ * @file iterator.h Iterator utilites, inspired by &lt;iterator&gt;.
  */
 
 #pragma once
