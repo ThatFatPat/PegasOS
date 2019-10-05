@@ -1,4 +1,8 @@
-/** @file util.h Various general-purpose utilities. */
+/**
+ * @addtogroup psl
+ * @{
+ * @file util.h Various general-purpose utilities.
+ */
 
 #pragma once
 
@@ -110,3 +114,5 @@ constexpr byte& operator^=(byte& lhs, byte rhs) {
 }
 
 } // namespace psl
+
+/** @} */

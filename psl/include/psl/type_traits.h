@@ -1,3 +1,9 @@
+/**
+ * @addtogroup psl
+ * @{
+ * @file type_traits.h
+ */
+
 #pragma once
 
 namespace psl {
@@ -211,3 +217,5 @@ template <typename T>
 constexpr bool is_integral_v = is_integral<T>::value;
 
 } // namespace psl
+
+/** @} */

@@ -1,4 +1,8 @@
-/** @file iterator.h Iterator utilites, inspired by <iterator>. */
+/**
+ * @addtogroup psl
+ * @{
+ * @file iterator.h Iterator utilites, inspired by <iterator>.
+ */
 
 #pragma once
 
@@ -76,3 +80,5 @@ constexpr T* end(T (&arr)[N]) {
 }
 
 } // namespace psl
+
+/** @} */

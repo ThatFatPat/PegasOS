@@ -1,3 +1,9 @@
+/**
+ * @addtogroup psl
+ * @{
+ * @file numeric.h
+ */
+
 #pragma once
 
 #include <psl/type_traits.h>
@@ -30,3 +36,5 @@ constexpr common_type_t<T, U> round_up(T val, U block) {
 }
 
 } // namespace psl
+
+/** @} */

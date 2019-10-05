@@ -1,4 +1,8 @@
-/** @file string_view.h */
+/**
+ * @addtogroup psl
+ * @{
+ * @file string_view.h
+ */
 
 #pragma once
 
@@ -127,3 +131,5 @@ constexpr string_view operator""_sv(const char* ptr, size_t len) {
 
 } // namespace literals
 } // namespace psl
+
+/** @} */
