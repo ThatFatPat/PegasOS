@@ -1,3 +1,9 @@
+/**
+ * @addtogroup mm
+ * @{
+ * @file phys.cpp
+ */
+
 #include <mm/phys.h>
 
 #include <arch/kernel_vspace.h>
@@ -12,3 +18,5 @@ void* paddr_to_phys_map(phys_addr_t paddr) {
 }
 
 } // namespace mm
+
+/** @} */
