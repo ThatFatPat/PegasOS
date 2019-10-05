@@ -1,5 +1,6 @@
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
   set(DOXYGEN_EXTRACT_ALL YES)
+  set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
   doxygen_add_docs(doxygen ${PROJECT_SOURCE_DIR})
 endif()
