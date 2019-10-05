@@ -14,12 +14,19 @@
 #include <psl/util.h>
 #include <stdint.h>
 
-// Set by boot.S
+/**
+ * Physical address of the multiboot data. Set in boot.S.
+ */
 mm::phys_addr_t multiboot_info_paddr;
 
 namespace arch {
 namespace {
 
+/**
+ * Process the specified multiboot tag.
+ * @param type The multiboot tag type.
+ * @param raw_tag The tag data.
+ */
 void process_multiboot_tag(uint32_t type, const void* raw_tag) {
   switch (type) {
   case MULTIBOOT_TAG_TYPE_BOOT_LOADER_NAME:
@@ -31,6 +38,9 @@ void process_multiboot_tag(uint32_t type, const void* raw_tag) {
   }
 }
 
+/**
+ * Process the multiboot info provided by the bootloader.
+ */
 void process_multiboot_info() {
   const auto* info = static_cast<const psl::byte*>(
       mm::paddr_to_phys_map(multiboot_info_paddr));
