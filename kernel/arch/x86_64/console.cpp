@@ -1,3 +1,9 @@
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file console.cpp
+ */
+
 #include <arch/console.h>
 
 #include <arch/x86_64/ioport.h>
@@ -138,3 +144,5 @@ void console_puts(psl::string_view str) {
 }
 
 } // namespace arch
+
+/** @} */

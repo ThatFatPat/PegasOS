@@ -1,4 +1,7 @@
-/** @file arch.h General architecture-specific header for x86_64 architecture.
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file arch.h General architecture-specific header for x86_64 architecture.
  */
 
 #pragma once
@@ -22,3 +25,5 @@ void early_init();
 }
 
 } // namespace arch
+
+/** @} */

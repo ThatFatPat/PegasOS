@@ -1,3 +1,9 @@
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file console.h Console API
+ */
+
 #pragma once
 
 #include <psl/string_view.h>
@@ -28,3 +34,5 @@ void console_putc(char c);
 void console_puts(psl::string_view str);
 
 } // namespace arch
+
+/** @} */

@@ -1,3 +1,9 @@
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file mp.cpp
+ */
+
 #include <arch/x86_64/mp.h>
 
 #include <arch/x86_64/control_regs.h>
@@ -25,3 +31,5 @@ void init_bsp() {
 }
 
 } // namespace arch::x86_64
+
+/** @} */

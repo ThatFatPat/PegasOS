@@ -1,3 +1,9 @@
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file init.cpp Architecture-specific initialization.
+ */
+
 #include <arch/console.h>
 #include <arch/x86_64/mmu.h>
 #include <arch/x86_64/mp.h>
@@ -52,3 +58,5 @@ void early_init() {
 }
 
 } // namespace arch
+
+/** @} */

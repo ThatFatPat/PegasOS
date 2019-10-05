@@ -1,3 +1,9 @@
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file mmu.cpp
+ */
+
 #include <arch/x86_64/mmu.h>
 
 #include <arch/kernel_vspace.h>
@@ -39,3 +45,5 @@ void mmu_init_phys_map() {
 }
 
 } // namespace arch::x86_64
+
+/** @} */

@@ -1,4 +1,8 @@
-/** @file ioport.h Processor I/O port helpers. */
+/**
+ * @addtogroup x86_64
+ * @{
+ * @file ioport.h Processor I/O port helpers.
+ */
 
 #pragma once
 
@@ -67,3 +71,5 @@ inline void outl(uint16_t port, uint32_t val) {
 }
 
 } // namespace arch::x86_64
+
+/** @} */

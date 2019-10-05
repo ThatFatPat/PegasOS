@@ -1,0 +1,4 @@
+/**
+ * @defgroup x86_64 x86_64 Architecture Abstraction Layer
+ * @ingroup kernel
+ */
