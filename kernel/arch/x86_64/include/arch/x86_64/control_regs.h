@@ -65,8 +65,8 @@
 #define X86_64_MSR_EFER_LME (1 << 8)
 
 /**
- * Enable use of the NX bit in paging structures. Any pte marked with the NX bit
- * will disallow execution of its referenced memory.
+ * Enable use of the NX bit in paging structures. With this flag set, any paging
+ * structure entry marked with @ref X86_64_MMU_FLAG_NX will not be executable.
  */
 #define X86_64_MSR_EFER_NXE (1 << 11)
 
