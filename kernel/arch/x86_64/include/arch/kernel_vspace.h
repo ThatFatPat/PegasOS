@@ -7,7 +7,7 @@
 #pragma once
 
 /**
- * Base address of the kernels address space.
+ * Base address of the kernel's address space.
  */
 #define ARCH_KERNEL_VSPACE_BASE 0xFFFFFF8000000000 // -512GiB
 
