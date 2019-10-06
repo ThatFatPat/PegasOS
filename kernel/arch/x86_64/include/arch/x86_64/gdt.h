@@ -64,8 +64,9 @@
 #define X86_64_GDT_ACCESS_DIR_DOWN (1 << 2)
 
 /**
- * If the segment is executable, indicate that it is readable as well.
- * Otherwise, indicate that the segment is writeable.
+ * Segment read/write flag.
+ * For code segments, indicate that they are readable as well.
+ * For data segments, indicate that they are writeable.
  */
 #define X86_64_GDT_ACCESS_READ_WRITE (1 << 1)
 
