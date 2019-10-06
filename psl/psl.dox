@@ -5,3 +5,17 @@
  * the constrained environments in which it is used, this library must be
  * header-only and can only depend on the freestanding C headers.
  */
+
+namespace psl {
+
+/**
+ * Library implementation details.
+ */
+namespace impl {}
+
+/**
+ * UDLs for psl types.
+ */
+inline namespace literals {}
+
+} // namespace psl
