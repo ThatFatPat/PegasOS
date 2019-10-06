@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(-Wall -Wextra)
 
-add_subdirectory(doxygen)
-
 add_subdirectory(psl)
 add_subdirectory(kernel)
 add_subdirectory(iso)
+
+add_subdirectory(doxygen)
