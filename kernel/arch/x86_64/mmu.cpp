@@ -23,14 +23,14 @@ alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t pml4[X86_64_PT_ENTRIES];
  */
 alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t high_pdpt[X86_64_PT_ENTRIES];
 
+namespace arch::x86_64 {
+namespace {
+
 /**
  * Page directories used to map the first 64GiB of physical memory.
  */
 alignas(X86_64_PT_ALIGN) arch::x86_64::pt_entry_t
     phys_map_pd[64 * X86_64_PT_ENTRIES];
-
-namespace arch::x86_64 {
-namespace {
 
 /**
  * Flush the current processor's TLB.
