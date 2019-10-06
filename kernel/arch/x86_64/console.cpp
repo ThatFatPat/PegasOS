@@ -19,7 +19,7 @@ namespace {
  * Represents a single cell in console video memory. Each cell contains both the
  * character to display as well as its attributes.
  */
-using console_word_t = volatile uint16_t;
+using console_cell_t = volatile uint16_t;
 
 
 /**
@@ -139,8 +139,8 @@ void update_cursor() {
 /**
  * Retrieve a pointer to the specified cell in console video memory.
  */
-console_word_t* get_console_word(size_t row, size_t col) {
-  return static_cast<console_word_t*>(
+console_cell_t* get_console_cell(size_t row, size_t col) {
+  return static_cast<console_cell_t*>(
              mm::paddr_to_phys_map(console_mem_paddr)) +
          console_cols * row + col;
 }
@@ -152,7 +152,7 @@ console_word_t* get_console_word(size_t row, size_t col) {
  */
 void clear_rows(size_t row, size_t count) {
   for (size_t i = 0; i < console_cols * count; i++) {
-    *get_console_word(row, i) = default_attr;
+    *get_console_cell(row, i) = default_attr;
   }
 }
 
@@ -165,9 +165,9 @@ void scroll(size_t lines) {
   size_t move_region_rows = console_rows - lines;
   size_t region_size = move_region_rows * console_cols;
 
-  // Note: can't memmove as console_word_t is volatile
+  // Note: can't memmove as console_cell_t is volatile
   for (size_t i = 0; i < region_size; i++) {
-    *get_console_word(0, i) = *get_console_word(lines, i);
+    *get_console_cell(0, i) = *get_console_cell(lines, i);
   }
 
   clear_rows(move_region_rows, lines);
@@ -214,7 +214,7 @@ void do_putc(char c) {
     break;
   default:
     if (c >= ' ') {
-      *get_console_word(curr_row, curr_col) = c | default_attr;
+      *get_console_cell(curr_row, curr_col) = c | default_attr;
       advance_col();
     }
   }
