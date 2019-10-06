@@ -1,0 +1,5 @@
+/**
+ * @defgroup klibc Kernel C Library
+ * @ingroup kernel
+ * Minimalistic C library implementation used in the kernel.
+ */

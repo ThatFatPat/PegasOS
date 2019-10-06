@@ -1,3 +1,9 @@
+/**
+ * @addtogroup klibc
+ * @{
+ * @file string.cpp
+ */
+
 #include <string.h>
 
 #include <psl/util.h>
@@ -52,3 +58,5 @@ size_t strlen(const char* str) {
   }
   return len;
 }
+
+/** @} */
