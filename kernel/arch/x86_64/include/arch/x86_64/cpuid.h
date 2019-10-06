@@ -17,7 +17,7 @@
 
 
 /**
- * Indicates CPU support for long mode when set in the `eax` register of `cpuid`
+ * Indicates CPU support for long mode when set in the `edx` register of `cpuid`
  * page @ref X86_64_CPUID_FUNC_EXT_PROC_INFO.
  */
 #define X86_64_CPU_FEATURE_LONG_MODE (1 << 29)
