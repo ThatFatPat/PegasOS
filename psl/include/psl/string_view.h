@@ -12,7 +12,7 @@
 namespace psl {
 
 /**
- * Primitive string view class inspired by std::string_view.
+ * Primitive `char`-only string view class inspired by std::string_view.
  */
 class string_view {
 public:
@@ -38,22 +38,27 @@ public:
   constexpr string_view(const char* ptr, size_t size)
       : ptr_{ptr}, size_{size} {}
 
+
   /**
    *  @return An `iterator` pointing to the beginning of the string.
    */
   constexpr iterator begin() const { return ptr_; }
+
   /**
    *  @return An `iterator` pointing past the end of the string.
    */
   constexpr iterator end() const { return ptr_ + size_; }
+
   /**
    *  @return A `const_iterator` pointing to the beginning of the string.
    */
   constexpr const_iterator cbegin() const { return ptr_; }
+
   /**
    *  @return A `const_iterator` pointing past the end of the string.
    */
   constexpr const_iterator cend() const { return ptr_ + size_; }
+
 
   /**
    * @return A pointer to the raw data stored in the string.
@@ -72,6 +77,7 @@ public:
    * @return True if the string is empty.
    */
   constexpr bool empty() const { return !size_; }
+
 
   /**
    * @return The first character of the stored string.
@@ -95,7 +101,7 @@ private:
 
 
 /**
- * Compare two  @ref psl::string_view "string_views" for equality.
+ * Compare two  @ref psl::string_view "string_view" objects for equality.
  */
 constexpr bool operator==(const string_view& lhs, const string_view& rhs) {
   if (lhs.size() != rhs.size()) {
@@ -112,7 +118,7 @@ constexpr bool operator==(const string_view& lhs, const string_view& rhs) {
 }
 
 /**
- * Compare two @ref psl::string_view "string_views" for inequality.
+ * Compare two @ref psl::string_view "string_view" objects for inequality.
  */
 constexpr bool operator!=(const string_view& lhs, const string_view& rhs) {
   return !(lhs == rhs);
