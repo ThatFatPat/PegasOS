@@ -1,13 +1,18 @@
 /**
  * @addtogroup psl
  * @{
- * @file type_traits.h
+ * @file type_traits.h Partial implementation of the standard
+ * &lt;type_traits&gt; header.
  */
 
 #pragma once
 
 namespace psl {
 
+/**
+ * Enable wrapping of an integer constant in a type. Serves as the base class
+ * for many of the type traits defined here.
+ */
 template <typename T, T V>
 struct integral_constant {
   using value_type = T;
@@ -19,53 +24,100 @@ struct integral_constant {
   constexpr value_type operator()() const { return value; }
 };
 
+/**
+ * Utility typedef for the common case of boolean integer constants.
+ */
 template <bool B>
 using bool_constant = integral_constant<bool, B>;
 
+/**
+ * `true` bool_constant.
+ */
 using true_type = bool_constant<true>;
+
+/**
+ * `false` bool_constant.
+ */
 using false_type = bool_constant<false>;
 
 
+/**
+ * Dummy type alias which always resolves to `void`. This is used to detect
+ * ill-formed types in SFINAE contexts.
+ */
 template <typename...>
 using void_t = void;
 
 
+/**
+ * Provide a member alias `type` equivalent to
+ * `T`. Serves as the base class for many type metafunctions.
+ */
 template <typename T>
 struct type_identity {
   using type = T;
 };
 
+/**
+ * Helper alias for using type_identity.
+ * @note When used as a parameter type in a function template, this alias can
+ * prevent deduction of of the template parameters.
+ */
 template <typename T>
 using type_identity_t = typename type_identity<T>::type;
 
 
+/**
+ * Provide a member alias `type` equivalent to `T` with the top-level `const`
+ * qualifier removed (if it exists).
+ */
 template <typename T>
 struct remove_const : type_identity<T> {};
 
 template <typename T>
 struct remove_const<const T> : type_identity<T> {};
 
+/**
+ * Helper alias for using remove_const.
+ */
 template <typename T>
 using remove_const_t = typename remove_const<T>::type;
 
 
+/**
+ * Provide a member alias `type` equivalent to `T` with the top-level
+ * `volatile` qualifier removed (if it exists).
+ */
 template <typename T>
 struct remove_volatile : type_identity<T> {};
 
 template <typename T>
 struct remove_volatile<volatile T> : type_identity<T> {};
 
+/**
+ * Helper alias for using remove_volatile.
+ */
 template <typename T>
 using remove_volatile_t = typename remove_volatile<T>::type;
 
 
+/**
+ * Helper alias for using remove_cv.
+ */
 template <typename T>
 using remove_cv_t = remove_volatile_t<remove_const_t<T>>;
 
+/**
+ * Provide a member alias `type` equivalent to `T` with the top-level `const`
+ * and `volatile` qualifiers removed.
+ */
 template <typename T>
 struct remove_cv : type_identity<remove_cv_t<T>> {};
 
 
+/**
+ * Provide a member alias `type` equivalent to `T` with references removed.
+ */
 template <typename T>
 struct remove_reference : type_identity<T> {};
 
@@ -75,44 +127,81 @@ struct remove_reference<T&> : type_identity<T> {};
 template <typename T>
 struct remove_reference<T&&> : type_identity<T> {};
 
+/**
+ * Helper alias for using remove_reference.
+ */
 template <typename T>
 using remove_reference_t = typename remove_reference<T>::type;
 
 
+/**
+ * Helper alias for using remove_cvref.
+ */
 template <typename T>
 using remove_cvref_t = remove_cv_t<remove_reference_t<T>>;
 
+/**
+ * Provide a member alias `type` equivalent to `T` with the top-level `const`
+ * and `volatile` qualifiers and any references stripped.
+ */
 template <typename T>
 struct remove_cvref : type_identity<remove_cvref_t<T>> {};
 
 
+/**
+ * If the type `T&` is well-formed, provide a member alias `type` equivalent to
+ * `T&`. Otherwise, `type` is `T`.
+ */
 template <typename T, typename = void>
 struct add_lvalue_reference : type_identity<T> {};
 
 template <typename T>
 struct add_lvalue_reference<T, void_t<T&>> : type_identity<T&> {};
 
+/**
+ * Helper alias for using add_lvalue_reference.
+ */
 template <typename T>
 using add_lvalue_reference_t = typename add_lvalue_reference<T>::type;
 
 
+/**
+ * If the type `T&&` is well-formed, provide a member alias `type` equivalent to
+ * `T&&`. Otherwise, `type` is `T`.
+ */
 template <typename T, typename = void>
 struct add_rvalue_reference : type_identity<T> {};
 
 template <typename T>
 struct add_rvalue_reference<T, void_t<T&&>> : type_identity<T&&> {};
 
+/**
+ * Helper alias for using add_rvalue_reference.
+ */
 template <typename T>
 using add_rvalue_reference_t = typename add_rvalue_reference<T>::type;
 
 
+/**
+ * Helper which generates a value of type `T&&` for use with `decltype`.
+ * @note This function may only be used in unevaluated contexts.
+ */
 template <typename T>
 add_rvalue_reference_t<T> declval();
 
 
+/**
+ * If all of the types `Ts...` are convertible to some type `U`, provide a
+ * member alias `type` equivalent to `U`. Otherwise, `type` is not provided.
+ * @note The current implementation is somewhat simplified and is not completely
+ * conformant. Notably, it does not decay its argument types.
+ */
 template <typename... Ts>
 struct common_type {};
 
+/**
+ * Helper alias for using common_type.
+ */
 template <typename... Ts>
 using common_type_t = typename common_type<Ts...>::type;
 
@@ -150,6 +239,10 @@ struct common_type<T1, T2, Rest...>
     : impl::common_type_rest<void, T1, T2, Rest...> {};
 
 
+/**
+ * If `E` is true, provide a member alias `type` equivalent to `T`. Otherwise,
+ * no member is provided.
+ */
 template <bool E, typename T = void>
 struct enable_if {};
 
@@ -158,16 +251,26 @@ struct enable_if<true, T> {
   using type = T;
 };
 
+/**
+ * Helper alias for using enable_if.
+ */
 template <bool E, typename T = void>
 using enable_if_t = typename enable_if<E, T>::type;
 
 
+/**
+ * `true` iff `T` and `U` name the same type.
+ */
 template <typename T, typename U>
 constexpr bool is_same_v = false;
 
 template <typename T>
 constexpr bool is_same_v<T, T> = true;
 
+/**
+ * Derives from `true_type` iff `T` and `U` name the same type. Otherwise,
+ * derives from `false_type`.
+ */
 template <typename T, typename U>
 struct is_same : bool_constant<is_same_v<T, U>> {};
 
@@ -210,9 +313,17 @@ struct is_integral<unsigned long long> : true_type {};
 
 } // namespace impl
 
+/**
+ * Derives from `true_type` iff `T` names a (possibly cv-qualified) integer
+ * type. Otherwise, derives from `false_type`.
+ */
 template <typename T>
 struct is_integral : impl::is_integral<remove_cv_t<T>> {};
 
+/**
+ * `true` iff `T` names a (possibly cv-qualified) integer
+ * type.
+ */
 template <typename T>
 constexpr bool is_integral_v = is_integral<T>::value;
 
