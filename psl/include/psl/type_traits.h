@@ -386,6 +386,92 @@ template <typename T>
 struct is_unsigned : bool_constant<is_unsigned_v<T>> {};
 
 
+namespace impl {
+
+template <typename T>
+constexpr bool is_nonbool_integral_v =
+    is_integral_v<T> && !is_same_v<remove_cv_t<T>, bool>;
+
+
+template <typename T>
+struct make_signed : type_identity<T> {};
+
+template <>
+struct make_signed<char> : type_identity<signed char> {};
+template <>
+struct make_signed<unsigned char> : type_identity<signed char> {};
+template <>
+struct make_signed<unsigned short> : type_identity<short> {};
+template <>
+struct make_signed<unsigned int> : type_identity<int> {};
+template <>
+struct make_signed<unsigned long> : type_identity<long> {};
+template <>
+struct make_signed<unsigned long long> : type_identity<long long> {};
+
+template <typename T>
+using make_signed_t = typename make_signed<T>::type;
+
+
+template <typename T>
+struct make_unsigned : type_identity<T> {};
+
+template <>
+struct make_unsigned<char> : type_identity<unsigned char> {};
+template <>
+struct make_unsigned<signed char> : type_identity<unsigned char> {};
+template <>
+struct make_unsigned<short> : type_identity<unsigned short> {};
+template <>
+struct make_unsigned<int> : type_identity<unsigned int> {};
+template <>
+struct make_unsigned<long> : type_identity<unsigned long> {};
+template <>
+struct make_unsigned<long long> : type_identity<unsigned long long> {};
+
+template <typename T>
+using make_unsigned_t = typename make_unsigned<T>::type;
+
+} // namespace impl
+
+
+/**
+ * If `T` is an integer type that is not `bool`, provide a member alias `type`
+ * corresponding to the signed variant of `T`. `T`'s cv-qualifiers are
+ * preserved.
+ */
+template <typename T, bool = impl::is_nonbool_integral_v<T>>
+struct make_signed {};
+
+template <typename T>
+struct make_signed<T, true>
+    : type_identity<apply_cv_t<T, impl::make_signed_t<T>>> {};
+
+/**
+ * Helper alias for using make_unsigned.
+ */
+template <typename T>
+using make_signed_t = typename make_signed<T>::type;
+
+
+/**
+ * If `T` is an integer type that is not `bool`, provide a member alias `type`
+ * corresponding to the unsigned variant of `T`. `T`'s cv-qualifiers are
+ * preserved.
+ */
+template <typename T, bool = impl::is_nonbool_integral_v<T>>
+struct make_unsigned {};
+
+template <typename T>
+struct make_unsigned<T, true>
+    : type_identity<apply_cv_t<T, impl::make_unsigned_t<T>>> {};
+
+/**
+ * Helper alias for using make_unsigned.
+ */
+template <typename T>
+using make_unsigned_t = typename make_unsigned<T>::type;
+
 } // namespace psl
 
 /** @} */
