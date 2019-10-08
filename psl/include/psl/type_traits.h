@@ -327,6 +327,40 @@ struct is_integral : impl::is_integral<remove_cv_t<T>> {};
 template <typename T>
 constexpr bool is_integral_v = is_integral<T>::value;
 
+
+/**
+ * `true` iff `T` is a signed integer type.
+ */
+template <typename T, bool = is_integral_v<T>>
+constexpr bool is_signed_v = T(-1) < T(0);
+
+template <typename T>
+constexpr bool is_signed_v<T, false> = false;
+
+/**
+ * Derives from `true_type` iff `T` is a signed integer type. Otherwise, derives
+ * from `false_type`.
+ */
+template <typename T>
+struct is_signed : bool_constant<is_signed_v<T>> {};
+
+
+/**
+ * `true` iff `T` is an unsigned integer type. Otherwise, derives from
+ * `false_type`.
+ */
+template <typename T, bool = is_integral_v<T>>
+constexpr bool is_unsigned_v = T(-1) > T(0);
+
+template <typename T>
+constexpr bool is_unsigned_v<T, false> = false;
+
+/**
+ * Derives from `true_type` iff `T` is an unsigned integer type.
+ */
+template <typename T>
+struct is_unsigned : bool_constant<is_unsigned_v<T>> {};
+
 } // namespace psl
 
 /** @} */
