@@ -2,7 +2,7 @@
  * @addtogroup psl
  * @{
  * @file type_traits.h Partial implementation of the standard
- * &lt;type_traits&gt; header.
+ * &lt;type_traits&gt; header, with psl-specific bits.
  */
 
 #pragma once
@@ -113,6 +113,30 @@ using remove_cv_t = remove_volatile_t<remove_const_t<T>>;
  */
 template <typename T>
 struct remove_cv : type_identity<remove_cv_t<T>> {};
+
+
+/**
+ * Provide a member alias `type` equivalent to `U` with any of `T`'s
+ * cv-qualifiers applied to it.
+ * @note This metafunction is psl-specific.
+ */
+template <typename T, typename U>
+struct apply_cv : type_identity<U> {};
+
+template <typename T, typename U>
+struct apply_cv<const T, U> : type_identity<const U> {};
+
+template <typename T, typename U>
+struct apply_cv<volatile T, U> : type_identity<volatile U> {};
+
+template <typename T, typename U>
+struct apply_cv<const volatile T, U> : type_identity<const volatile U> {};
+
+/**
+ * Helper alias for using apply_cv.
+ */
+template <typename T, typename U>
+using apply_cv_t = typename apply_cv<T, U>::type;
 
 
 /**
@@ -360,6 +384,7 @@ constexpr bool is_unsigned_v<T, false> = false;
  */
 template <typename T>
 struct is_unsigned : bool_constant<is_unsigned_v<T>> {};
+
 
 } // namespace psl
 
