@@ -38,8 +38,10 @@ char* to_chars(char* first, char* last, I value, int base = 10) {
 
   if constexpr (is_signed_v<I>) {
     if (value < 0) {
-      // No need to check here since [first, last) is required to be a valid
-      // range.
+      if (first == last) {
+        return nullptr;
+      }
+
       *first++ = '-';
       uvalue = -value;
     }
