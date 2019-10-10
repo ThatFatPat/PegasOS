@@ -34,14 +34,14 @@ constexpr char to_chars_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
  */
 template <typename I, typename = enable_if_t<is_integral_v<I>>>
 char* to_chars(char* first, char* last, I value, int base = 10) {
-  auto uvalue = static_cast<psl::make_unsigned_t<I>>(value);
+  if (first == last) {
+    return nullptr;
+  }
+
+  auto uvalue = static_cast<make_unsigned_t<I>>(value);
 
   if constexpr (is_signed_v<I>) {
     if (value < 0) {
-      if (first == last) {
-        return nullptr;
-      }
-
       *first++ = '-';
       uvalue = -value;
     }
@@ -76,13 +76,13 @@ char* to_chars(char* first, char* last, I value, int base = 10) {
     break;
   }
 
-  ptrdiff_t str_size = psl::end(buf) - rnext;
-  if (str_size > last - first) {
+  ptrdiff_t digits = psl::end(buf) - rnext;
+  if (digits > last - first) {
     return nullptr;
   }
 
-  memcpy(first, rnext, str_size);
-  return first + str_size;
+  memcpy(first, rnext, digits);
+  return first + digits;
 }
 
 } // namespace psl
