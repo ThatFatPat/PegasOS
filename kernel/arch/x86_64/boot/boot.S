@@ -74,6 +74,14 @@ LOCAL_DATA(early_stack)
   .skip EARLY_STACK_SIZE
 DATA_END(early_stack)
 
+.set EARLY_HEAP_SIZE, 0x1000000 # 1MiB
+.set EARLY_HEAP_ALIGN, 0x10
+
+.align EARLY_HEAP_ALIGN
+LOCAL_DATA(early_heap)
+  .skip EARLY_HEAP_SIZE
+DATA_END(early_heap)
+
 .align X86_64_PT_ALIGN
 LOCAL_DATA(early_low_pd)
   .skip X86_64_PT_SIZE
