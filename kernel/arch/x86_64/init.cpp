@@ -43,19 +43,17 @@ void process_multiboot_tag(uint32_t type, const void* raw_tag) {
  */
 void process_multiboot_info() {
   const auto* info = static_cast<const psl::byte*>(
-      mm::paddr_to_phys_map(multiboot_info_paddr));
+                         mm::paddr_to_phys_map(multiboot_info_paddr)) +
+                     2 * sizeof(uint32_t); // Skip size and reserved fields
 
-  // Note: this is okay as info is properly aligned and psl::byte allows
-  // aliasing.
-  uint32_t info_size = *reinterpret_cast<const uint32_t*>(info);
-  info += 2 * sizeof(uint32_t); // Skip size and reserved fields
+  uint32_t processed = 0;
+  multiboot_tag tag;
 
-  for (uint32_t processed = 0; processed < info_size;) {
-    multiboot_tag tag;
+  do {
     memcpy(&tag, info + processed, sizeof(tag));
     process_multiboot_tag(tag.type, info + processed);
     processed = psl::round_up(processed + tag.size, MULTIBOOT_TAG_ALIGN);
-  }
+  } while (tag.type);
 }
 
 } // namespace
