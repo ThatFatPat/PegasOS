@@ -76,7 +76,7 @@ public:
   /**
    * @return True if the string is empty.
    */
-  constexpr bool empty() const { return !size_; }
+  [[nodiscard]] constexpr bool empty() const { return !size_; }
 
 
   /**
@@ -126,7 +126,6 @@ constexpr bool operator!=(const string_view& lhs, const string_view& rhs) {
 
 
 inline namespace literals {
-
 /**
  * Allow the creation of a @ref psl::string_view "string_view" in literal form
  * as `"str"_sv`.
