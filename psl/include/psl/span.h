@@ -50,7 +50,7 @@ public:
   constexpr reference operator[](index_type idx) const { return data_[idx]; }
   constexpr reference front() const { return *data_; }
   constexpr reference back() const { return *(data_ + size_ - 1); }
-  constexpr pointer data() const noexcept { return data; }
+  constexpr pointer data() const noexcept { return data_; }
 
   constexpr iterator begin() const noexcept { return data_; }
   constexpr iterator end() const noexcept { return data_ + size_; }
