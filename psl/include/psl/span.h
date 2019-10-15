@@ -66,6 +66,6 @@ public:
 private:
   pointer data_;
   index_type size_;
-}
+};
 
 } // namespace psl
