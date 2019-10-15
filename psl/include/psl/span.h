@@ -5,6 +5,7 @@
  */
 
 #pragma once
+#include <psl/type_traits.h>
 
 namespace psl {
 
@@ -12,7 +13,7 @@ template <class T>
 class span {
 public:
   using element_type = T;
-  using value_type = remove_cv_t(element_type);
+  using value_type = remove_cv_t<element_type>;
   using index_type = size_t;
   using difference_type = ptrdiff_t;
   using pointer = element_type*;
