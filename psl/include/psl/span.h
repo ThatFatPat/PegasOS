@@ -54,12 +54,8 @@ public:
 
   constexpr iterator begin() const noexcept { return data_; }
   constexpr iterator end() const noexcept { return data_ + size_; }
-  constexpr const_iterator cbegin() const noexcept {
-    return const_cast<element_type>(data_);
-  }
-  constexpr const_iterator cend() const noexcept {
-    return const_cast<element_type>(data_ + size_);
-  }
+  constexpr const_iterator cbegin() const noexcept { return data_; }
+  constexpr const_iterator cend() const noexcept { return data_ + size_; }
 
   friend constexpr iterator begin(span s) noexcept { return s.begin(); }
   friend constexpr iterator end(span s) noexcept { return s.end(); }
