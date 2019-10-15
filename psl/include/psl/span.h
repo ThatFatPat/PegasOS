@@ -30,14 +30,13 @@ public:
   template <size_t N>
   constexpr span(element_type (&arr)[N]) noexcept : data_(arr), size_(N) {}
 
-  constexpr span<element_type> first(index_type count) const {
+  constexpr span first(index_type count) const {
     return span(data_, data_ + count);
   }
-  constexpr span<element_type> last(index_type count) const {
+  constexpr span last(index_type count) const {
     return span(data_ + size_ - count, data_ + size_);
   }
-  constexpr span<element_type> subspan(index_type offset,
-                                       index_type count) const {
+  constexpr span subspan(index_type offset, index_type count) const {
     return span(data_ + offset, data_ + offset + count);
   }
 
