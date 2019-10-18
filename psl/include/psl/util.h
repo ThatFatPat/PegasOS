@@ -113,6 +113,21 @@ constexpr byte& operator^=(byte& lhs, byte rhs) {
   return lhs = lhs ^ rhs;
 }
 
+
+/**
+ * Compute the address of `obj`, even in the presence of overloaded `operator&`.
+ */
+template <typename T>
+constexpr T* addressof(T& obj) {
+  return __builtin_addressof(obj);
+}
+
+/**
+ * Ensure that rvalues cannot have their address taken.
+ */
+template <typename T>
+const T* addressof(const T&&) = delete;
+
 } // namespace psl
 
 /** @} */
