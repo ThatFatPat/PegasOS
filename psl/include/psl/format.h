@@ -13,6 +13,11 @@
 #include <stddef.h>
 
 namespace psl {
+
+template <typename T, typename = void>
+struct formatter;
+
+
 namespace impl {
 
 template <typename O>
@@ -24,7 +29,7 @@ struct format_arg {
   constexpr format_arg(const T& val)
       : obj(::psl::addressof(val)),
         output_func([](O& outputter, const void* obj, string_view spec) {
-          /* ADL */ format_val(outputter, *static_cast<const T*>(obj), spec);
+          formatter<T>::format(outputter, *static_cast<T*>(obj), spec);
         }) {}
 
   const void* obj;
