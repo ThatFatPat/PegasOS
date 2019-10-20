@@ -84,7 +84,9 @@
  * @subsection psl_fmt_formatter_builtin Built-in Formatters
  * The library supports formatting for several types out of the box:
  * - **String types** (those which convert implicitly to psl::string_view)
- * - **Integer types**
+ * - **Integer types** - the following specifications are supported:
+ *   - `x` - format as hexadecimal
+ *   - `b` - format as binary
  * - **cv-void pointers** (but not other types of pointers)
  * - `nullptr_t`
  *
