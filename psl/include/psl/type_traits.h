@@ -508,8 +508,7 @@ struct is_signed : bool_constant<is_signed_v<T>> {};
 
 
 /**
- * `true` iff `T` is an unsigned integer type. Otherwise, derives from
- * `false_type`.
+ * `true` iff `T` is an unsigned integer type.
  */
 template <typename T, bool = is_integral_v<T>>
 constexpr bool is_unsigned_v = T(-1) > T(0);
