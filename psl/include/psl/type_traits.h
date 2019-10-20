@@ -375,6 +375,20 @@ template <typename T>
 struct is_volatile : bool_constant<is_volatile_v<T>> {};
 
 
+/**
+ * `true` iff `T` is a function type.
+ */
+template <typename T>
+constexpr bool is_function_v = !is_reference_v<T> && !is_const_v<const T>;
+
+/**
+ * Derives from `true_type` iff `T` is a function type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_function : bool_constant<is_function_v<T>> {};
+
+
 namespace impl {
 
 template <typename T>
