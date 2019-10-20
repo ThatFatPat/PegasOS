@@ -321,6 +321,26 @@ template <typename T>
 struct is_array : bool_constant<is_array_v<T>> {};
 
 
+/**
+ * `true` iff `T` is an lvalue or rvalue reference type.
+ */
+template <typename T>
+constexpr bool is_reference_v = false;
+
+template <typename T>
+constexpr bool is_reference_v<T&> = true;
+
+template <typename T>
+constexpr bool is_reference_v<T&&> = true;
+
+/**
+ * Derives from `true_type` iff `T` is an lvalue or rvalue reference type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_reference : bool_constant<is_reference_v<T>> {};
+
+
 namespace impl {
 
 template <typename T>
