@@ -405,6 +405,40 @@ struct is_function : bool_constant<is_function_v<T>> {};
 
 namespace impl {
 
+template <typename To>
+void try_convert(To);
+
+template <typename From, typename To, typename = void>
+constexpr bool is_convertible_test_v = false;
+
+template <typename From, typename To>
+constexpr bool is_convertible_test_v<
+    From, To, decltype(::psl::impl::try_convert<To>(declval<From>()))> = true;
+
+} // namespace impl
+
+
+/**
+ * `true` iff `From` is implicitly convertible to `To`.
+ */
+template <typename From, typename To,
+          bool = is_void_v<From> || is_array_v<To> || is_function_v<To>>
+constexpr bool is_convertible_v = is_void_v<To>;
+
+template <typename From, typename To>
+constexpr bool is_convertible_v<From, To, false> =
+    impl::is_convertible_test_v<From, To>;
+
+/**
+ * Derives from `true_type` iff `From` is implicitly convertible to `To`.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename From, typename To>
+struct is_convertible : bool_constant<is_convertible_v<From, To>> {};
+
+
+namespace impl {
+
 template <typename T>
 struct is_integral : false_type {};
 
