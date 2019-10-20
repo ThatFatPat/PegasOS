@@ -7,11 +7,14 @@
 
 #pragma once
 
+#include <limits.h>
 #include <psl/algorithm.h>
+#include <psl/charconv.h>
 #include <psl/string_view.h>
 #include <psl/type_traits.h>
 #include <psl/util.h>
 #include <stddef.h>
+#include <stdint.h>
 
 namespace psl {
 
@@ -36,7 +39,7 @@ struct format_arg {
   constexpr format_arg(const T& val)
       : obj(::psl::addressof(val)),
         output_func([](O& output_sink, const void* obj, string_view spec) {
-          formatter<T>::format(output_sink, *static_cast<T*>(obj), spec);
+          formatter<T>::format(output_sink, *static_cast<const T*>(obj), spec);
         }) {}
 
   const void* obj;
@@ -203,6 +206,52 @@ template <typename O, typename... Args>
 void format(O& output_sink, string_view fmt, const Args&... args) {
   vformat(output_sink, fmt, make_format_args<O>(args...));
 }
+
+
+// Built-in formatters
+
+template <typename T>
+struct formatter<T, enable_if_t<is_convertible_v<T, string_view>>> {
+  template <typename O>
+  static void format(O& output_sink, string_view val, string_view) {
+    output_sink(val);
+  }
+};
+
+template <typename I>
+struct formatter<I, enable_if_t<is_integral_v<I>>> {
+  template <typename O>
+  static void format(O& output_sink, I val, string_view spec) {
+    char buf[sizeof(I) * CHAR_BIT];
+    int base = spec == "x" ? 16 : spec == "b" ? 2 : 10;
+
+    char* str_end = to_chars(begin(buf), end(buf), val, base);
+    if (str_end) {
+      size_t str_size = str_end - begin(buf);
+      output_sink(string_view{buf, str_size});
+    }
+  }
+};
+
+template <>
+struct formatter<nullptr_t> {
+  template <typename O>
+  static void format(O& output_sink, nullptr_t, string_view) {
+    using namespace literals;
+    output_sink("nullptr"_sv);
+  }
+};
+
+template <typename T>
+struct formatter<T*, enable_if_t<is_void_v<T>>> {
+  template <typename O>
+  static void format(O& output_sink, T* ptr, string_view) {
+    if (!ptr) {
+      return formatter<nullptr_t>::format(output_sink, nullptr, "");
+    }
+    psl::format(output_sink, "0x{:x}", reinterpret_cast<uintptr_t>(ptr));
+  }
+};
 
 } // namespace psl
 
