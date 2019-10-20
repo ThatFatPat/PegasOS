@@ -11,6 +11,8 @@
 
 namespace psl {
 
+using nullptr_t = decltype(nullptr);
+
 /**
  * Byte type inspired by `std::byte`. Prefer this type to integer types when
  * performing byte-level access on objects. This type is not an integer, but can
