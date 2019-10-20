@@ -1,0 +1,115 @@
+/**
+ * @page psl_fmt PSL Formatting Library
+ * A type-safe, user-extensible string formatting library inspired by {fmt}.
+ *
+ * @section psl_fmt_str Format Strings
+ *
+ * Every format string can contain _substitutions_ and _escape sequences_.
+ *
+ * A _substitution_ is delimited by curly braces (`{` and `}`) and indicates
+ * that a formatting argument should be inserted at that location (see @ref
+ * psl_fmt_str_subst for details).
+ *
+ * An _escape sequence_ is one of `{{` or `}}`, and causes the corresponding
+ * brace character to be output.
+ *
+ * @note The format string is invalid if it contains any unescaped braces that
+ * do not denote a substitution. In this case, the output of the formatting
+ * functions is unspecified.
+ *
+ * @subsection psl_fmt_str_subst Substitutions
+ * A substitution indicates that a formatting argument should be output. The
+ * most basic substitution is simply `{}`, which indicates that the next
+ * formatting argument should be used. For example, the string `"hello {}"` will
+ * output `hello` followed by the first formatting argument.
+ *
+ * Optionally, a substitution may contain a colon followed by a _specification_,
+ * a string to be passed to the @ref psl_fmt_formatter "formatter". The
+ * exact meaning of the specification depends the formatter used. For example,
+ * the string `"test {:abcd}"` will output `test` followed by the first
+ * formatting argument, formatted with the specification `abcd` (the
+ * interpretation of which depends on the formatter).
+ *
+ * @note Escaped braces are not supported inside of substitutions - the first
+ * `}` encountered terminates the substitution.
+ *
+ * @section psl_fmt_output_sink Output Sinks
+ *
+ * Any callable object accepting a single argument of type psl::string_view is
+ * known as an _output sink_. Output sinks are used by the formatting
+ * functions to report the formatted output back to the caller in (possibly
+ * several) psl::string_view pieces.
+ *
+ * @note The exact decomposition of the formatted string into psl::string_view
+ * pieces is unspecified and is subject to change. Output sinks should not
+ * depend on a particular decomposition.
+ *
+ * @subsection psl_fmt_output_sink_ex Example
+ *
+ * Given the function
+ *
+ * @code{.cpp}
+ * void write_to_log(psl::string_view str) {
+ *   // ...
+ * }
+ * @endcode
+ *
+ * which writes to the log, the call
+ * @code{.cpp}
+ * psl::format(write_to_log, "hi {}", "there");
+ * @endcode
+ * will cause the string `"hi there"` to be written to the log, possibly in
+ * several pieces (i.e. there may be several calls to `write_to_log`).
+ *
+ * @section psl_fmt_formatter Formatters
+ *
+ * Formatters are the extensibility mechanism by which support for additional
+ * argument types can be added to the library. The class template
+ * psl::formatter should be specialized for any type wishing to support
+ * formatted output, and must contain a static member function with the
+ * following signature:
+ *
+ * @code{.cpp}
+ * template <typename O>
+ * static void format(O& output_sink, const T& val, psl::string_view spec);
+ * @endcode
+ *
+ * Where `output_sink` is the @ref psl_fmt_output_sink "output sink"
+ * being used, `val` is the value to be formatted, and `spec` is the
+ * specification extracted from the format string.
+ *
+ * psl::formatter has a second template argument defaulting to `void` which can
+ * be used for SFINAE.
+ *
+ * @subsection psl_fmt_formatter_builtin Built-in Formatters
+ * The library supports formatting for several types out of the box:
+ * - **String types** (those which convert implicitly to psl::string_view)
+ * - **Integer types**
+ * - **cv-void pointers** (but not other types of pointers)
+ * - `nullptr_t`
+ *
+ * @subsection psl_fmt_formatter_ex Custom Formatter Example
+ *
+ * The following defines a class `point` and a custom formatter for it.
+ *
+ * @code{.cpp}
+ * struct point {
+ *   int x, y;
+ * };
+ *
+ * template<>
+ * struct psl::formatter<point> {
+ *   template <typename O>
+ *   void format(O& output_sink, const point& pt, psl::string_view) {
+ *     psl::format(output_sink, "({}, {})", pt.x, pt.y);
+ *   }
+ * }
+ * @endcode
+ *
+ * `point` can then be used as a format argument:
+ *
+ * @code{.cpp}
+ * point pt = {1, 2};
+ * psl::format(..., "pt = {}", pt); // Outputs 'pt = (1, 2)'
+ * @endcode
+ */
