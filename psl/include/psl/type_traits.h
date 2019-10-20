@@ -341,6 +341,40 @@ template <typename T>
 struct is_reference : bool_constant<is_reference_v<T>> {};
 
 
+/**
+ * `true` iff `T` is a const-qualified type.
+ */
+template <typename T>
+constexpr bool is_const_v = false;
+
+template <typename T>
+constexpr bool is_const_v<const T> = true;
+
+/**
+ * Derives from `true_type` iff `T` is an const-qualified type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_const : bool_constant<is_const_v<T>> {};
+
+
+/**
+ * `true` iff `T` is a volatile-qualified type.
+ */
+template <typename T>
+constexpr bool is_volatile_v = false;
+
+template <typename T>
+constexpr bool is_volatile_v<volatile T> = true;
+
+/**
+ * Derives from `true_type` iff `T` is an volatile-qualified type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_volatile : bool_constant<is_volatile_v<T>> {};
+
+
 namespace impl {
 
 template <typename T>
