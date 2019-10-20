@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <stddef.h>
+
 namespace psl {
 
 /**
@@ -297,6 +299,26 @@ constexpr bool is_same_v<T, T> = true;
  */
 template <typename T, typename U>
 struct is_same : bool_constant<is_same_v<T, U>> {};
+
+
+/**
+ * `true` iff `T` is a (bounded or unbounded) array type.
+ */
+template <typename T>
+constexpr bool is_array_v = false;
+
+template <typename T>
+constexpr bool is_array_v<T[]> = true;
+
+template <typename T, size_t N>
+constexpr bool is_array_v<T[N]> = true;
+
+/**
+ * Derives from `true_type` iff `T` is a (bounded or unbounded) array type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_array : bool_constant<is_array_v<T>> {};
 
 
 namespace impl {
