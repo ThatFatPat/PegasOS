@@ -302,6 +302,20 @@ struct is_same : bool_constant<is_same_v<T, U>> {};
 
 
 /**
+ * `true` iff `T` is (cv-qualified) void.
+ */
+template <typename T>
+constexpr bool is_void_v = is_same_v<remove_cv_t<T>, void>;
+
+/**
+ * Derives from `true_type` iff `T` is (cv-qualified) void.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_void : bool_constant<is_void_v<T>> {};
+
+
+/**
  * `true` iff `T` is a (bounded or unbounded) array type.
  */
 template <typename T>
