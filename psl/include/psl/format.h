@@ -128,7 +128,7 @@ using format_args_ref_t = impl::format_args_ref<type_identity_t<O>>;
  * format suitable for output through @ref psl_fmt_output_sink "output sink"
  * `O`.
  * @note The exact return type of this function is unspecified, but is
- * guaranteed to be convertible to `psl::format_args_ref_t`.
+ * guaranteed to be convertible to `psl::format_args_ref_t<O>`.
  */
 template <typename O, typename... Args>
 constexpr impl::format_arg_store<O, sizeof...(Args)> make_format_args(
