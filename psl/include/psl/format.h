@@ -112,9 +112,9 @@ void output_format_arg(O& output_sink, const format_args_ref<O>& args,
 
 /**
  * Opaque type which can be used to reference type-erased formatting arguments
- * created by @ref psl::make_format_args.
+ * created by @ref make_format_args().
  * @note To prevent dangling references, objects of this type should not outlive
- * the formatting argument objects (created by @ref psl::make_format_args) to
+ * the formatting argument objects (created by @ref make_format_args()) to
  * which they refer.
  */
 template <typename O>
@@ -125,7 +125,7 @@ using format_args_ref_t = impl::format_args_ref<type_identity_t<O>>;
  * format suitable for output through @ref psl_fmt_output_sink "output sink"
  * `O`.
  * @note The exact return type of this function is unspecified, but is
- * guaranteed to be convertible to @ref psl::format_args_ref_t.
+ * guaranteed to be convertible to `psl::format_args_ref_t`.
  */
 template <typename O, typename... Args>
 constexpr impl::format_arg_store<O, Args...> make_format_args(
@@ -140,7 +140,7 @@ constexpr impl::format_arg_store<O, Args...> make_format_args(
  * @param output_sink The @ref psl_fmt_output_sink "output sink" to use.
  * @param fmt The @ref psl_fmt_str "format string" to use.
  * @param args A reference to the object holding type-erased formatting
- * arguments. Use @ref psl::make_format_args to create such an object.
+ * arguments. Use @ref make_format_args() to create such an object.
  * @note If the format string is invalid, or if there are more @ref
  * psl_fmt_str_subst "substitutions" in the format string than formatting
  * arguments, the output of this function is unspecified.
