@@ -46,24 +46,27 @@ struct format_arg {
   void (*output_func)(O&, const void*, string_view);
 };
 
-template <typename O, typename... Args>
+template <typename O, size_t N>
 class format_arg_store {
 public:
-  constexpr format_arg_store(const Args&... args) : args_{{args}...} {}
+  template <typename... Args>
+  constexpr format_arg_store(const Args&... args) : args_{{args}...} {
+    static_assert(sizeof...(Args) == N);
+  }
 
 private:
   friend class format_args_ref<O>;
 
-  format_arg<O> args_[sizeof...(Args)];
+  format_arg<O> args_[N];
 };
 
 
 template <typename O>
 class format_args_ref {
 public:
-  template <typename... Args>
-  constexpr format_args_ref(const format_arg_store<O, Args...>& args)
-      : args_(args.args_), size_(sizeof...(Args)) {}
+  template <size_t N>
+  constexpr format_args_ref(const format_arg_store<O, N>& args)
+      : args_(args.args_), size_(N) {}
 
 private:
   template <typename T>
@@ -128,7 +131,7 @@ using format_args_ref_t = impl::format_args_ref<type_identity_t<O>>;
  * guaranteed to be convertible to `psl::format_args_ref_t`.
  */
 template <typename O, typename... Args>
-constexpr impl::format_arg_store<O, Args...> make_format_args(
+constexpr impl::format_arg_store<O, sizeof...(Args)> make_format_args(
     const Args&... args) {
   return {args...};
 }
