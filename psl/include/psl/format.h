@@ -222,6 +222,17 @@ struct formatter<T, enable_if_t<is_convertible_v<T, string_view>>> {
 };
 
 /**
+ * @ref psl_fmt_formatter_builtin "Built-in formatter" for characters.
+ */
+template <>
+struct formatter<char> {
+  template <typename O>
+  static void format(O& output_sink, char c, string_view) {
+    output_sink(string_view{&c, 1});
+  }
+};
+
+/**
  * @ref psl_fmt_formatter_builtin "Built-in formatter" for integer types.
  */
 template <typename I>
