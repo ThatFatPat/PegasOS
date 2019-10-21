@@ -210,6 +210,9 @@ void format(O& output_sink, string_view fmt, const Args&... args) {
 
 // Built-in formatters
 
+/**
+ * @ref psl_fmt_formatter_builtin "Built-in formatter" for string types.
+ */
 template <typename T>
 struct formatter<T, enable_if_t<is_convertible_v<T, string_view>>> {
   template <typename O>
@@ -218,6 +221,9 @@ struct formatter<T, enable_if_t<is_convertible_v<T, string_view>>> {
   }
 };
 
+/**
+ * @ref psl_fmt_formatter_builtin "Built-in formatter" for integer types.
+ */
 template <typename I>
 struct formatter<I, enable_if_t<is_integral_v<I>>> {
   template <typename O>
@@ -233,6 +239,9 @@ struct formatter<I, enable_if_t<is_integral_v<I>>> {
   }
 };
 
+/**
+ * @ref psl_fmt_formatter_builtin "Built-in formatter" for `nullptr_t`.
+ */
 template <>
 struct formatter<nullptr_t> {
   template <typename O>
@@ -242,6 +251,9 @@ struct formatter<nullptr_t> {
   }
 };
 
+/**
+ * @ref psl_fmt_formatter_builtin "Built-in formatter" for void pointers.
+ */
 template <typename T>
 struct formatter<T*, enable_if_t<is_void_v<T>>> {
   template <typename O>
