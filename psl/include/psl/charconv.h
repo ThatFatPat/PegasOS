@@ -31,14 +31,16 @@ constexpr char to_chars_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
  * @return On success, a pointer past the end of the converted integer. On error
  * (if the buffer is too small), returns `nullptr`.
  * @note This function does not null terminate the output buffer.
+ * @note This function only participates in overload resolution if `I` is an
+ * integer type other than `bool`.
  */
-template <typename I, typename = enable_if_t<is_integral_v<I>>>
+template <typename I, typename U = make_unsigned_t<I>>
 char* to_chars(char* first, char* last, I value, int base = 10) {
   if (first == last) {
     return nullptr;
   }
 
-  auto uvalue = static_cast<make_unsigned_t<I>>(value);
+  auto uvalue = static_cast<U>(value);
 
   if constexpr (is_signed_v<I>) {
     if (value < 0) {
