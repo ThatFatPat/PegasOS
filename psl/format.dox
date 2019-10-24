@@ -89,6 +89,8 @@
  * - **Integer types** - the following specifications are supported:
  *   - `x` - format as hexadecimal
  *   - `b` - format as binary
+ * - **Booleans** - formatted as `true`/`false`. To print `1`/`0` instead, cast
+ * to an integer first (e.g. with unary `+`).
  * - **cv-void pointers** (but not other types of pointers)
  * - `nullptr_t`
  *

@@ -254,6 +254,18 @@ struct formatter<I, enable_if_t<is_integral_v<I>>> {
 };
 
 /**
+ * @ref psl_fmt_formatter_builtin "Built-in formatter" for booleans.
+ */
+template <>
+struct formatter<bool> {
+  template <typename O>
+  static void format(O& output_sink, bool val, string_view) {
+    using namespace literals;
+    output_sink(val ? "true"_sv : "false"_sv);
+  }
+};
+
+/**
  * @ref psl_fmt_formatter_builtin "Built-in formatter" for `nullptr_t`.
  */
 template <>
