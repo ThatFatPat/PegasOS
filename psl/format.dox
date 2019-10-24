@@ -106,7 +106,7 @@
  * template<>
  * struct psl::formatter<point> {
  *   template <typename O>
- *   void format(O& output_sink, const point& pt, psl::string_view) {
+ *   static void format(O& output_sink, const point& pt, psl::string_view) {
  *     psl::format(output_sink, "({}, {})", pt.x, pt.y);
  *   }
  * }
@@ -116,6 +116,6 @@
  *
  * @code{.cpp}
  * point pt = {1, 2};
- * psl::format(..., "pt = {}", pt); // Outputs 'pt = (1, 2)'
+ * psl::format(write_to_log, "pt = {}", pt); // Outputs 'pt = (1, 2)'
  * @endcode
  */
