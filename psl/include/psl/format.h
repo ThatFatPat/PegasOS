@@ -211,6 +211,88 @@ void format(O& output_sink, string_view fmt, const Args&... args) {
 }
 
 
+/**
+ * @ref psl_fmt_output_sink "Output sink" that formats to a character iterator
+ * range.
+ */
+template <typename It>
+class range_output_sink {
+public:
+  /**
+   * Construct a sink capable of formatting to `[first, last)`. If the output is
+   * too large, it will be truncated to fit in the range.
+   */
+  range_output_sink(It first, It last) : cursor_(first), last_(last) {}
+
+  void operator()(string_view str);
+
+  /**
+   * @return An iterator past the end of the current formatted range.
+   */
+  It cursor() const { return cursor_; }
+
+  /**
+   * @return The total (untruncated) size of the formatted output.
+   */
+  size_t total_size() const { return total_size_; }
+
+private:
+  It cursor_;
+  It last_;
+  size_t total_size_ = 0;
+};
+
+template <typename It>
+void range_output_sink<It>::operator()(string_view str) {
+  total_size_ += str.size();
+  for (char c : str) {
+    if (cursor_ == last_) {
+      return;
+    }
+    *cursor_++ = c;
+  }
+}
+
+/**
+ * Output from a @ref format_to_range() operation.
+ */
+template <typename It>
+struct [[nodiscard]] format_to_range_result {
+  /**
+   * Iterator pointing past the end of the formatted range.
+   */
+  It it;
+
+  /**
+   * Holds the total (untruncated) size of the formatted output.
+   */
+  size_t total_size;
+};
+
+/**
+ * Format the @ref psl_fmt_str "format string" `fmt` with arguments `args` to
+ * the character range `[first, last)`. If the output is too large, it will be
+ * truncated to fit.
+ * @param first Iterator indicating the start of the output range.
+ * @param last Iterator pointing past the end of the output range.
+ * @param fmt The @ref psl_fmt_str "format string" to use.
+ * @param args The formatting arguments to use.
+ * @return A @ref psl::format_to_range_result in which `it` points past the end
+ * of the formatted output and `total_size` holds the total size of the
+ * formatted output.
+ * @note If the format string is invalid, or if there are more @ref
+ * psl_fmt_str_subst "substitutions" in the format string than formatting
+ * arguments, the output of this function is unspecified.
+ */
+template <typename It, typename... Args>
+format_to_range_result<It> format_to_range(It first, It last, string_view fmt,
+                                           const Args&... args) {
+  range_output_sink<It> sink{first, last};
+  vformat(sink, fmt, make_format_args<range_output_sink<It>>(args...));
+  return {sink.cursor(), sink.total_size()};
+}
+
+
 // Built-in formatters
 
 /**
