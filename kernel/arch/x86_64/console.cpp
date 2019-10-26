@@ -98,7 +98,10 @@ constexpr size_t console_cols = 80;
  */
 struct console_write_handler : public log::write_handler {
   constexpr console_write_handler() = default;
-  void write(psl::string_view str) override { console_puts(str); }
+  void write(psl::string_view str) override {
+    console_puts(str);
+    console_putc('\n');
+  }
 };
 
 
