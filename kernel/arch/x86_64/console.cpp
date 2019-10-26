@@ -91,6 +91,13 @@ constexpr size_t console_rows = 25;
  */
 constexpr size_t console_cols = 80;
 
+struct impl_console_write_handler : public log::write_handler {
+  constexpr impl_console_write_handler() = default;
+  void write(psl::string_view str) { console_puts(str); }
+};
+
+struct impl_console_write_handler console_write_handler =
+    impl_console_write_handler{};
 
 /**
  * Current row in the console.
@@ -101,7 +108,6 @@ size_t curr_row;
  * Current column in the console
  */
 size_t curr_col;
-
 
 /**
  * Enable the VGA cursor
@@ -244,6 +250,10 @@ void console_puts(psl::string_view str) {
     do_putc(c);
   }
   update_cursor();
+}
+
+void console_log_init() {
+  log::set_write_handler(&console_write_handler);
 }
 
 } // namespace arch

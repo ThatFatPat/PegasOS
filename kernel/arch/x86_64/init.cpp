@@ -62,6 +62,7 @@ void early_init() {
   x86_64::init_bsp();
   x86_64::mmu_init_phys_map();
   console_init();
+  console_log_init();
   process_multiboot_info();
 }
 
