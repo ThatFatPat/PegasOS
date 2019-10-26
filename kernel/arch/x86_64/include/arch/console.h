@@ -34,6 +34,11 @@ void console_putc(char c);
  */
 void console_puts(psl::string_view str);
 
+
+/**
+ * Initialize logging for the console. Sets write handler for logging library
+ * implementation.
+ */
 void console_log_init();
 
 } // namespace arch

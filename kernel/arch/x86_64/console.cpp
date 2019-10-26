@@ -91,11 +91,18 @@ constexpr size_t console_rows = 25;
  */
 constexpr size_t console_cols = 80;
 
+
+/**
+ * Implementation of @ref log::write_handler for the console.
+ */
 struct impl_console_write_handler : public log::write_handler {
   constexpr impl_console_write_handler() = default;
   void write(psl::string_view str) { console_puts(str); }
 };
 
+/**
+ * @ref log::write_handler derived instance for the console
+ */
 struct impl_console_write_handler console_write_handler =
     impl_console_write_handler{};
 
