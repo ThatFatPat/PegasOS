@@ -7,6 +7,7 @@
 #include <arch/console.h>
 
 #include <arch/x86_64/ioport.h>
+#include <lib/log.h>
 #include <mm/phys.h>
 
 #include <stdint.h>
@@ -95,16 +96,11 @@ constexpr size_t console_cols = 80;
 /**
  * Implementation of @ref log::write_handler for the console.
  */
-struct impl_console_write_handler : public log::write_handler {
-  constexpr impl_console_write_handler() = default;
-  void write(psl::string_view str) { console_puts(str); }
+struct console_write_handler : public log::write_handler {
+  constexpr console_write_handler() = default;
+  void write(psl::string_view str) override { console_puts(str); }
 };
 
-/**
- * @ref log::write_handler derived instance for the console
- */
-struct impl_console_write_handler console_write_handler =
-    impl_console_write_handler{};
 
 /**
  * Current row in the console.
@@ -259,8 +255,9 @@ void console_puts(psl::string_view str) {
   update_cursor();
 }
 
-void console_log_init() {
-  log::set_write_handler(&console_write_handler);
+void console_install_log_handler() {
+  static /* constinit */ console_write_handler handler{};
+  log::set_write_handler(&handler);
 }
 
 } // namespace arch

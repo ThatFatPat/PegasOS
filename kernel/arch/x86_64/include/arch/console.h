@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <lib/log.h>
 #include <psl/string_view.h>
 
 namespace arch {
@@ -36,10 +35,10 @@ void console_puts(psl::string_view str);
 
 
 /**
- * Initialize logging for the console. Sets write handler for logging library
- * implementation.
+ * Install a @ref log::write_handler "logging write handler" that redirects
+ * output to the console.
  */
-void console_log_init();
+void console_install_log_handler();
 
 } // namespace arch
 /** @} */
