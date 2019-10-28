@@ -7,6 +7,11 @@ set(PEGASOS_NO_KERNEL_LTO OFF CACHE BOOL "Disable kernel LTO in release builds")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_program(CLANG_TIDY clang-tidy)
+if (CLANG_TIDY)
+  set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY})
+endif()
+
 add_compile_options(-Wall -Wextra)
 
 add_subdirectory(psl)

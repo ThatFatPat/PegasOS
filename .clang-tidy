@@ -1,0 +1,2 @@
+Checks: 'readability-*,bugprone-*,misc-*,clang-analyzer-*'
+FormatStyle: file
