@@ -288,10 +288,10 @@ using enable_if_t = typename enable_if<E, T>::type;
  * `true` iff `T` and `U` name the same type.
  */
 template <typename T, typename U>
-constexpr bool is_same_v = false;
+inline constexpr bool is_same_v = false;
 
 template <typename T>
-constexpr bool is_same_v<T, T> = true;
+inline constexpr bool is_same_v<T, T> = true;
 
 /**
  * Derives from `true_type` iff `T` and `U` name the same type. Otherwise,
@@ -305,7 +305,7 @@ struct is_same : bool_constant<is_same_v<T, U>> {};
  * `true` iff `T` is (cv-qualified) void.
  */
 template <typename T>
-constexpr bool is_void_v = is_same_v<remove_cv_t<T>, void>;
+inline constexpr bool is_void_v = is_same_v<remove_cv_t<T>, void>;
 
 /**
  * Derives from `true_type` iff `T` is (cv-qualified) void.
@@ -319,13 +319,13 @@ struct is_void : bool_constant<is_void_v<T>> {};
  * `true` iff `T` is a (bounded or unbounded) array type.
  */
 template <typename T>
-constexpr bool is_array_v = false;
+inline constexpr bool is_array_v = false;
 
 template <typename T>
-constexpr bool is_array_v<T[]> = true;
+inline constexpr bool is_array_v<T[]> = true;
 
 template <typename T, size_t N>
-constexpr bool is_array_v<T[N]> = true;
+inline constexpr bool is_array_v<T[N]> = true;
 
 /**
  * Derives from `true_type` iff `T` is a (bounded or unbounded) array type.
@@ -339,13 +339,13 @@ struct is_array : bool_constant<is_array_v<T>> {};
  * `true` iff `T` is an lvalue or rvalue reference type.
  */
 template <typename T>
-constexpr bool is_reference_v = false;
+inline constexpr bool is_reference_v = false;
 
 template <typename T>
-constexpr bool is_reference_v<T&> = true;
+inline constexpr bool is_reference_v<T&> = true;
 
 template <typename T>
-constexpr bool is_reference_v<T&&> = true;
+inline constexpr bool is_reference_v<T&&> = true;
 
 /**
  * Derives from `true_type` iff `T` is an lvalue or rvalue reference type.
@@ -359,10 +359,10 @@ struct is_reference : bool_constant<is_reference_v<T>> {};
  * `true` iff `T` is a const-qualified type.
  */
 template <typename T>
-constexpr bool is_const_v = false;
+inline constexpr bool is_const_v = false;
 
 template <typename T>
-constexpr bool is_const_v<const T> = true;
+inline constexpr bool is_const_v<const T> = true;
 
 /**
  * Derives from `true_type` iff `T` is an const-qualified type.
@@ -376,10 +376,10 @@ struct is_const : bool_constant<is_const_v<T>> {};
  * `true` iff `T` is a volatile-qualified type.
  */
 template <typename T>
-constexpr bool is_volatile_v = false;
+inline constexpr bool is_volatile_v = false;
 
 template <typename T>
-constexpr bool is_volatile_v<volatile T> = true;
+inline constexpr bool is_volatile_v<volatile T> = true;
 
 /**
  * Derives from `true_type` iff `T` is an volatile-qualified type.
@@ -393,7 +393,8 @@ struct is_volatile : bool_constant<is_volatile_v<T>> {};
  * `true` iff `T` is a function type.
  */
 template <typename T>
-constexpr bool is_function_v = !is_reference_v<T> && !is_const_v<const T>;
+inline constexpr bool is_function_v =
+    !is_reference_v<T> && !is_const_v<const T>;
 
 /**
  * Derives from `true_type` iff `T` is a function type.
@@ -409,10 +410,10 @@ template <typename To>
 void try_convert(To);
 
 template <typename From, typename To, typename = void>
-constexpr bool is_convertible_test_v = false;
+inline constexpr bool is_convertible_test_v = false;
 
 template <typename From, typename To>
-constexpr bool is_convertible_test_v<
+inline constexpr bool is_convertible_test_v<
     From, To, decltype(::psl::impl::try_convert<To>(declval<From>()))> = true;
 
 } // namespace impl
@@ -423,10 +424,10 @@ constexpr bool is_convertible_test_v<
  */
 template <typename From, typename To,
           bool = is_void_v<From> || is_array_v<To> || is_function_v<To>>
-constexpr bool is_convertible_v = is_void_v<To>;
+inline constexpr bool is_convertible_v = is_void_v<To>;
 
 template <typename From, typename To>
-constexpr bool is_convertible_v<From, To, false> =
+inline constexpr bool is_convertible_v<From, To, false> =
     impl::is_convertible_test_v<From, To>;
 
 /**
@@ -487,17 +488,17 @@ struct is_integral : impl::is_integral<remove_cv_t<T>> {};
  * type.
  */
 template <typename T>
-constexpr bool is_integral_v = is_integral<T>::value;
+inline constexpr bool is_integral_v = is_integral<T>::value;
 
 
 /**
  * `true` iff `T` is a signed integer type.
  */
 template <typename T, bool = is_integral_v<T>>
-constexpr bool is_signed_v = T(-1) < T(0);
+inline constexpr bool is_signed_v = T(-1) < T(0);
 
 template <typename T>
-constexpr bool is_signed_v<T, false> = false;
+inline constexpr bool is_signed_v<T, false> = false;
 
 /**
  * Derives from `true_type` iff `T` is a signed integer type. Otherwise, derives
@@ -511,10 +512,10 @@ struct is_signed : bool_constant<is_signed_v<T>> {};
  * `true` iff `T` is an unsigned integer type.
  */
 template <typename T, bool = is_integral_v<T>>
-constexpr bool is_unsigned_v = T(-1) > T(0);
+inline constexpr bool is_unsigned_v = T(-1) > T(0);
 
 template <typename T>
-constexpr bool is_unsigned_v<T, false> = false;
+inline constexpr bool is_unsigned_v<T, false> = false;
 
 /**
  * Derives from `true_type` iff `T` is an unsigned integer type.
@@ -526,7 +527,7 @@ struct is_unsigned : bool_constant<is_unsigned_v<T>> {};
 namespace impl {
 
 template <typename T>
-constexpr bool is_nonbool_integral_v =
+inline constexpr bool is_nonbool_integral_v =
     is_integral_v<T> && !is_same_v<remove_cv_t<T>, bool>;
 
 
