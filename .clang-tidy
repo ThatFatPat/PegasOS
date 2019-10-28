@@ -1,2 +1,3 @@
 Checks: 'readability-*,bugprone-*,misc-*,clang-analyzer-*'
+HeaderFilterRegex: '.'
 FormatStyle: file
