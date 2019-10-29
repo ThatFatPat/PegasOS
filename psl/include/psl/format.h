@@ -219,7 +219,7 @@ void format(O& output_sink, string_view fmt, const Args&... args) {
 template <typename T>
 struct formatter<T, enable_if_t<is_convertible_v<T, string_view>>> {
   template <typename O>
-  static void format(O& output_sink, string_view val, string_view) {
+  static void format(O& output_sink, string_view val, string_view /*spec*/) {
     output_sink(val);
   }
 };
@@ -230,7 +230,7 @@ struct formatter<T, enable_if_t<is_convertible_v<T, string_view>>> {
 template <>
 struct formatter<char> {
   template <typename O>
-  static void format(O& output_sink, char c, string_view) {
+  static void format(O& output_sink, char c, string_view /*spec*/) {
     output_sink(string_view{&c, 1});
   }
 };
@@ -259,7 +259,7 @@ struct formatter<I, enable_if_t<is_integral_v<I>>> {
 template <>
 struct formatter<bool> {
   template <typename O>
-  static void format(O& output_sink, bool val, string_view) {
+  static void format(O& output_sink, bool val, string_view /*spec*/) {
     using namespace literals;
     output_sink(val ? "true"_sv : "false"_sv);
   }
@@ -271,7 +271,7 @@ struct formatter<bool> {
 template <>
 struct formatter<nullptr_t> {
   template <typename O>
-  static void format(O& output_sink, nullptr_t, string_view) {
+  static void format(O& output_sink, nullptr_t, string_view /*spec*/) {
     using namespace literals;
     output_sink("nullptr"_sv);
   }
@@ -283,7 +283,7 @@ struct formatter<nullptr_t> {
 template <typename T>
 struct formatter<T*, enable_if_t<is_void_v<T>>> {
   template <typename O>
-  static void format(O& output_sink, T* ptr, string_view) {
+  static void format(O& output_sink, T* ptr, string_view /*spec*/) {
     if (!ptr) {
       return formatter<nullptr_t>::format(output_sink, nullptr, "");
     }
