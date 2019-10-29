@@ -1,6 +1,6 @@
 # readability-magic-numbers is just too noisy for now
 # TODO: revisit this
-Checks: 'readability-*,-readability-magic-numbers,modernize-use-*,-modernize-use-trailing-return-type,bugprone-*,misc-*,clang-analyzer-*'
+Checks: 'readability-*,-readability-magic-numbers,modernize-use-*,google-readability-casting,-modernize-use-trailing-return-type,bugprone-*,misc-*,clang-analyzer-*'
 HeaderFilterRegex: '.*'
 FormatStyle: file
 CheckOptions:
