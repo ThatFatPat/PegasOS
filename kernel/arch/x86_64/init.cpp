@@ -8,6 +8,7 @@
 #include <arch/x86_64/mmu.h>
 #include <arch/x86_64/mp.h>
 #include <arch/x86_64/multiboot2.h>
+#include <lib/log.h>
 #include <mm/phys.h>
 
 #include <psl/numeric.h>
@@ -31,9 +32,7 @@ void process_multiboot_tag(uint32_t type, const void* raw_tag) {
   switch (type) {
   case MULTIBOOT_TAG_TYPE_BOOT_LOADER_NAME:
     const auto* tag = static_cast<const multiboot_tag_string*>(raw_tag);
-    console_puts("Booted by: ");
-    console_puts(tag->string);
-    console_putc('\n');
+    log::write("Booted by: {}", tag->string);
     break;
   }
 }
@@ -62,6 +61,7 @@ void early_init() {
   x86_64::init_bsp();
   x86_64::mmu_init_phys_map();
   console_init();
+  console_install_log_handler();
   process_multiboot_info();
 }
 
