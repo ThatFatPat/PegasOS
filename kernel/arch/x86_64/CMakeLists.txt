@@ -12,7 +12,7 @@ target_sources(
 )
 
 set(
-  ARCH_ADDITIONAL_OPTIONS 
+  ARCH_ADDITIONAL_OPTIONS
   -mcmodel=kernel -mno-red-zone -mno-mmx -mno-sse -mno-sse2
 )
 
