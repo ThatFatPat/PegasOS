@@ -146,7 +146,8 @@ inline void write_cr4(uint64_t value) {
  * @return Current state of the MSR specified by `id`.
  */
 inline uint64_t read_msr(uint32_t id) {
-  uint32_t low, high;
+  uint32_t low;
+  uint32_t high;
   asm volatile("rdmsr" : "=d"(high), "=a"(low) : "c"(id));
   return static_cast<uint64_t>(high) << 32 | low;
 }
@@ -157,8 +158,8 @@ inline uint64_t read_msr(uint32_t id) {
  * @param value The value to be stored.
  */
 inline void write_msr(uint32_t id, uint64_t value) {
-  uint32_t low = static_cast<uint32_t>(value);
-  uint32_t high = static_cast<uint32_t>(value >> 32);
+  auto low = static_cast<uint32_t>(value);
+  auto high = static_cast<uint32_t>(value >> 32);
 
   asm volatile("wrmsr" : : "c"(id), "d"(high), "a"(low));
 }

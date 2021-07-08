@@ -90,10 +90,10 @@
 
 #ifndef __ASSEMBLER__
 
-typedef unsigned char multiboot_uint8_t;
-typedef unsigned short multiboot_uint16_t;
-typedef unsigned int multiboot_uint32_t;
-typedef unsigned long long multiboot_uint64_t;
+typedef unsigned char multiboot_uint8_t;       // NOLINT: keep c-compatible
+typedef unsigned short multiboot_uint16_t;     // NOLINT: keep c-compatible
+typedef unsigned int multiboot_uint32_t;       // NOLINT: keep c-compatible
+typedef unsigned long long multiboot_uint64_t; // NOLINT: keep c-compatible
 
 struct multiboot_header {
   /*  Must be MULTIBOOT_MAGIC - see above. */
@@ -188,6 +188,7 @@ struct multiboot_mmap_entry {
   multiboot_uint32_t type;
   multiboot_uint32_t zero;
 };
+// NOLINTNEXTLINE: keep c-compatible
 typedef struct multiboot_mmap_entry multiboot_memory_map_t;
 
 struct multiboot_tag {

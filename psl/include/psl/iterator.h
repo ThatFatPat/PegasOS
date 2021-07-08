@@ -22,7 +22,7 @@ constexpr auto size(const C& cont) -> decltype(cont.size()) {
  * @return The size of the specified array.
  */
 template <typename T, size_t N>
-constexpr size_t size(const T (&)[N]) {
+constexpr size_t size(const T (&/*arr*/)[N]) {
   return N;
 }
 

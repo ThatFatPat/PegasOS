@@ -43,51 +43,51 @@ public:
   /**
    *  @return An `iterator` pointing to the beginning of the string.
    */
-  constexpr iterator begin() const { return ptr_; }
+  [[nodiscard]] constexpr iterator begin() const { return ptr_; }
 
   /**
    *  @return An `iterator` pointing past the end of the string.
    */
-  constexpr iterator end() const { return ptr_ + size_; }
+  [[nodiscard]] constexpr iterator end() const { return ptr_ + size_; }
 
   /**
    *  @return A `const_iterator` pointing to the beginning of the string.
    */
-  constexpr const_iterator cbegin() const { return ptr_; }
+  [[nodiscard]] constexpr const_iterator cbegin() const { return ptr_; }
 
   /**
    *  @return A `const_iterator` pointing past the end of the string.
    */
-  constexpr const_iterator cend() const { return ptr_ + size_; }
+  [[nodiscard]] constexpr const_iterator cend() const { return ptr_ + size_; }
 
 
   /**
    * @return A pointer to the raw data stored in the string.
    */
-  constexpr const char* data() const { return ptr_; }
+  [[nodiscard]] constexpr const char* data() const { return ptr_; }
 
   /**
    * @return The size of the string.
    */
-  constexpr size_t size() const { return size_; }
+  [[nodiscard]] constexpr size_t size() const { return size_; }
   /**
    * @return The size of the string.
    */
-  constexpr size_t length() const { return size_; }
+  [[nodiscard]] constexpr size_t length() const { return size_; }
   /**
    * @return True if the string is empty.
    */
-  [[nodiscard]] constexpr bool empty() const { return !size_; }
+  [[nodiscard]] constexpr bool empty() const { return size_ == 0; }
 
 
   /**
    * @return The first character of the stored string.
    */
-  constexpr const char& front() const { return ptr_[0]; }
+  [[nodiscard]] constexpr const char& front() const { return ptr_[0]; }
   /**
    * @return The last character of the stored string.
    */
-  constexpr const char& back() const { return ptr_[size_]; }
+  [[nodiscard]] constexpr const char& back() const { return ptr_[size_]; }
   /**
    * @param i The position of the character to return.
    *

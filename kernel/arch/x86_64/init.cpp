@@ -52,7 +52,7 @@ void process_multiboot_info() {
     memcpy(&tag, info + processed, sizeof(tag));
     process_multiboot_tag(tag.type, info + processed);
     processed = psl::round_up(processed + tag.size, MULTIBOOT_TAG_ALIGN);
-  } while (tag.type);
+  } while (tag.type != 0U);
 }
 
 } // namespace
