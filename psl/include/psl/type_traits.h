@@ -2,10 +2,12 @@
  * @addtogroup psl
  * @{
  * @file type_traits.h Partial implementation of the standard
- * &lt;type_traits&gt; header.
+ * &lt;type_traits&gt; header, with psl-specific bits.
  */
 
 #pragma once
+
+#include <stddef.h>
 
 namespace psl {
 
@@ -113,6 +115,30 @@ using remove_cv_t = remove_volatile_t<remove_const_t<T>>;
  */
 template <typename T>
 struct remove_cv : type_identity<remove_cv_t<T>> {};
+
+
+/**
+ * Provide a member alias `type` equivalent to `U` with any of `T`'s
+ * cv-qualifiers applied to it.
+ * @note This metafunction is psl-specific.
+ */
+template <typename T, typename U>
+struct apply_cv : type_identity<U> {};
+
+template <typename T, typename U>
+struct apply_cv<const T, U> : type_identity<const U> {};
+
+template <typename T, typename U>
+struct apply_cv<volatile T, U> : type_identity<volatile U> {};
+
+template <typename T, typename U>
+struct apply_cv<const volatile T, U> : type_identity<const volatile U> {};
+
+/**
+ * Helper alias for using apply_cv.
+ */
+template <typename T, typename U>
+using apply_cv_t = typename apply_cv<T, U>::type;
 
 
 /**
@@ -275,6 +301,142 @@ template <typename T, typename U>
 struct is_same : bool_constant<is_same_v<T, U>> {};
 
 
+/**
+ * `true` iff `T` is (cv-qualified) void.
+ */
+template <typename T>
+constexpr bool is_void_v = is_same_v<remove_cv_t<T>, void>;
+
+/**
+ * Derives from `true_type` iff `T` is (cv-qualified) void.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_void : bool_constant<is_void_v<T>> {};
+
+
+/**
+ * `true` iff `T` is a (bounded or unbounded) array type.
+ */
+template <typename T>
+constexpr bool is_array_v = false;
+
+template <typename T>
+constexpr bool is_array_v<T[]> = true;
+
+template <typename T, size_t N>
+constexpr bool is_array_v<T[N]> = true;
+
+/**
+ * Derives from `true_type` iff `T` is a (bounded or unbounded) array type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_array : bool_constant<is_array_v<T>> {};
+
+
+/**
+ * `true` iff `T` is an lvalue or rvalue reference type.
+ */
+template <typename T>
+constexpr bool is_reference_v = false;
+
+template <typename T>
+constexpr bool is_reference_v<T&> = true;
+
+template <typename T>
+constexpr bool is_reference_v<T&&> = true;
+
+/**
+ * Derives from `true_type` iff `T` is an lvalue or rvalue reference type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_reference : bool_constant<is_reference_v<T>> {};
+
+
+/**
+ * `true` iff `T` is a const-qualified type.
+ */
+template <typename T>
+constexpr bool is_const_v = false;
+
+template <typename T>
+constexpr bool is_const_v<const T> = true;
+
+/**
+ * Derives from `true_type` iff `T` is an const-qualified type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_const : bool_constant<is_const_v<T>> {};
+
+
+/**
+ * `true` iff `T` is a volatile-qualified type.
+ */
+template <typename T>
+constexpr bool is_volatile_v = false;
+
+template <typename T>
+constexpr bool is_volatile_v<volatile T> = true;
+
+/**
+ * Derives from `true_type` iff `T` is an volatile-qualified type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_volatile : bool_constant<is_volatile_v<T>> {};
+
+
+/**
+ * `true` iff `T` is a function type.
+ */
+template <typename T>
+constexpr bool is_function_v = !is_reference_v<T> && !is_const_v<const T>;
+
+/**
+ * Derives from `true_type` iff `T` is a function type.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename T>
+struct is_function : bool_constant<is_function_v<T>> {};
+
+
+namespace impl {
+
+template <typename To>
+void try_convert(To);
+
+template <typename From, typename To, typename = void>
+constexpr bool is_convertible_test_v = false;
+
+template <typename From, typename To>
+constexpr bool is_convertible_test_v<
+    From, To, decltype(::psl::impl::try_convert<To>(declval<From>()))> = true;
+
+} // namespace impl
+
+
+/**
+ * `true` iff `From` is implicitly convertible to `To`.
+ */
+template <typename From, typename To,
+          bool = is_void_v<From> || is_array_v<To> || is_function_v<To>>
+constexpr bool is_convertible_v = is_void_v<To>;
+
+template <typename From, typename To>
+constexpr bool is_convertible_v<From, To, false> =
+    impl::is_convertible_test_v<From, To>;
+
+/**
+ * Derives from `true_type` iff `From` is implicitly convertible to `To`.
+ * Otherwise, derives from `false_type`.
+ */
+template <typename From, typename To>
+struct is_convertible : bool_constant<is_convertible_v<From, To>> {};
+
+
 namespace impl {
 
 template <typename T>
@@ -326,6 +488,126 @@ struct is_integral : impl::is_integral<remove_cv_t<T>> {};
  */
 template <typename T>
 constexpr bool is_integral_v = is_integral<T>::value;
+
+
+/**
+ * `true` iff `T` is a signed integer type.
+ */
+template <typename T, bool = is_integral_v<T>>
+constexpr bool is_signed_v = T(-1) < T(0);
+
+template <typename T>
+constexpr bool is_signed_v<T, false> = false;
+
+/**
+ * Derives from `true_type` iff `T` is a signed integer type. Otherwise, derives
+ * from `false_type`.
+ */
+template <typename T>
+struct is_signed : bool_constant<is_signed_v<T>> {};
+
+
+/**
+ * `true` iff `T` is an unsigned integer type.
+ */
+template <typename T, bool = is_integral_v<T>>
+constexpr bool is_unsigned_v = T(-1) > T(0);
+
+template <typename T>
+constexpr bool is_unsigned_v<T, false> = false;
+
+/**
+ * Derives from `true_type` iff `T` is an unsigned integer type.
+ */
+template <typename T>
+struct is_unsigned : bool_constant<is_unsigned_v<T>> {};
+
+
+namespace impl {
+
+template <typename T>
+constexpr bool is_nonbool_integral_v =
+    is_integral_v<T> && !is_same_v<remove_cv_t<T>, bool>;
+
+
+template <typename T>
+struct make_signed : type_identity<T> {};
+
+template <>
+struct make_signed<char> : type_identity<signed char> {};
+template <>
+struct make_signed<unsigned char> : type_identity<signed char> {};
+template <>
+struct make_signed<unsigned short> : type_identity<short> {};
+template <>
+struct make_signed<unsigned int> : type_identity<int> {};
+template <>
+struct make_signed<unsigned long> : type_identity<long> {};
+template <>
+struct make_signed<unsigned long long> : type_identity<long long> {};
+
+template <typename T>
+using make_signed_t = typename make_signed<T>::type;
+
+
+template <typename T>
+struct make_unsigned : type_identity<T> {};
+
+template <>
+struct make_unsigned<char> : type_identity<unsigned char> {};
+template <>
+struct make_unsigned<signed char> : type_identity<unsigned char> {};
+template <>
+struct make_unsigned<short> : type_identity<unsigned short> {};
+template <>
+struct make_unsigned<int> : type_identity<unsigned int> {};
+template <>
+struct make_unsigned<long> : type_identity<unsigned long> {};
+template <>
+struct make_unsigned<long long> : type_identity<unsigned long long> {};
+
+template <typename T>
+using make_unsigned_t = typename make_unsigned<T>::type;
+
+} // namespace impl
+
+
+/**
+ * If `T` is an integer type that is not `bool`, provide a member alias `type`
+ * corresponding to the signed variant of `T`. `T`'s cv-qualifiers are
+ * preserved.
+ */
+template <typename T, bool = impl::is_nonbool_integral_v<T>>
+struct make_signed {};
+
+template <typename T>
+struct make_signed<T, true>
+    : type_identity<apply_cv_t<T, impl::make_signed_t<T>>> {};
+
+/**
+ * Helper alias for using make_unsigned.
+ */
+template <typename T>
+using make_signed_t = typename make_signed<T>::type;
+
+
+/**
+ * If `T` is an integer type that is not `bool`, provide a member alias `type`
+ * corresponding to the unsigned variant of `T`. `T`'s cv-qualifiers are
+ * preserved.
+ */
+template <typename T, bool = impl::is_nonbool_integral_v<T>>
+struct make_unsigned {};
+
+template <typename T>
+struct make_unsigned<T, true>
+    : type_identity<apply_cv_t<T, impl::make_unsigned_t<T>>> {};
+
+/**
+ * Helper alias for using make_unsigned.
+ */
+template <typename T>
+using make_unsigned_t = typename make_unsigned<T>::type;
 
 } // namespace psl
 

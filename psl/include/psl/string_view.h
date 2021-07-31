@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <psl/numeric.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -76,7 +77,7 @@ public:
   /**
    * @return True if the string is empty.
    */
-  constexpr bool empty() const { return !size_; }
+  [[nodiscard]] constexpr bool empty() const { return !size_; }
 
 
   /**
@@ -93,6 +94,34 @@ public:
    * @return The i'th character of the stored string.
    */
   constexpr const char& operator[](size_t i) const { return ptr_[i]; }
+
+
+  /**
+   * Retrieve a view of the substring `[pos, min(size(), pos + count))`.
+   * @param pos Position of start of substring.
+   * @param count Requested size. The returned substring may be shorter if the
+   * original string is not long enough.
+   * @return View of the requested substring.
+   * @note The behavior is undefined if `pos > size()`.
+   */
+  constexpr string_view substr(size_t pos, size_t count = -1) {
+    return {ptr_ + pos, min(count, size_ - pos)};
+  }
+
+  /**
+   * Advance the start of the view forward by `n` characters.
+   * @note The behavior is undefined if `n > size()`.
+   */
+  constexpr void remove_prefix(size_t n) {
+    ptr_ += n;
+    size_ -= n;
+  }
+
+  /**
+   * Move the end of the view back by `n` characters.
+   * @note The behavior is undefined if `n > size()`.
+   */
+  constexpr void remove_suffix(size_t n) { size_ -= n; }
 
 private:
   const char* ptr_ = nullptr;
@@ -126,7 +155,6 @@ constexpr bool operator!=(const string_view& lhs, const string_view& rhs) {
 
 
 inline namespace literals {
-
 /**
  * Allow the creation of a @ref psl::string_view "string_view" in literal form
  * as `"str"_sv`.

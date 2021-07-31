@@ -7,6 +7,7 @@
 #include <arch/console.h>
 
 #include <arch/x86_64/ioport.h>
+#include <lib/log.h>
 #include <mm/phys.h>
 
 #include <stdint.h>
@@ -93,6 +94,18 @@ constexpr size_t console_cols = 80;
 
 
 /**
+ * Implementation of @ref log::write_handler for the console.
+ */
+struct console_write_handler : public log::write_handler {
+  constexpr console_write_handler() = default;
+  void write(psl::string_view str) override {
+    console_puts(str);
+    console_putc('\n');
+  }
+};
+
+
+/**
  * Current row in the console.
  */
 size_t curr_row;
@@ -101,7 +114,6 @@ size_t curr_row;
  * Current column in the console
  */
 size_t curr_col;
-
 
 /**
  * Enable the VGA cursor
@@ -244,6 +256,11 @@ void console_puts(psl::string_view str) {
     do_putc(c);
   }
   update_cursor();
+}
+
+void console_install_log_handler() {
+  static /* constinit */ console_write_handler handler{};
+  log::set_write_handler(&handler);
 }
 
 } // namespace arch

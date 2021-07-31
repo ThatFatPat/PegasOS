@@ -2,7 +2,7 @@ ENTRY(_start32)
 
 SECTIONS {
   . = 4M;
-  
+
   _bootseg_start = .;
   .multiboot ALIGN(8) : {
     KEEP(*(.multiboot))
@@ -33,7 +33,7 @@ SECTIONS {
   }
   . = ALIGN(4K);
   _kern_code_end = .;
-  
+
   _kern_rodata_start = .;
   .rodata : AT(ADDR(.rodata) - _kern_virt_start + _bootseg_end) {
     *(.rodata)

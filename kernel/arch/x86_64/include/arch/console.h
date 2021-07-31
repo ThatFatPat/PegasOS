@@ -33,6 +33,12 @@ void console_putc(char c);
  */
 void console_puts(psl::string_view str);
 
-} // namespace arch
 
+/**
+ * Install a @ref log::write_handler "logging write handler" that redirects
+ * output to the console.
+ */
+void console_install_log_handler();
+
+} // namespace arch
 /** @} */

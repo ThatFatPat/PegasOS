@@ -1,0 +1,32 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x86_64-elf-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "buildRoot": "${projectDir}\\build",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "toolchain/x86_64/gcc.cmake",
+      "intelliSenseMode": "linux-gcc-x64",
+      "wslPath": "${defaultWSLPath}",
+      "variables": []
+    },
+    {
+      "name": "x86_64-elf-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\build",
+      "cmakeExecutable": "/usr/bin/cmake",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "cmakeToolchain": "toolchain/x86_64/gcc.cmake",
+      "intelliSenseMode": "linux-gcc-x64",
+      "wslPath": "${defaultWSLPath}",
+      "variables": []
+    }
+  ]
+}

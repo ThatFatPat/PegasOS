@@ -11,6 +11,8 @@
 
 namespace psl {
 
+using nullptr_t = decltype(nullptr);
+
 /**
  * Byte type inspired by `std::byte`. Prefer this type to integer types when
  * performing byte-level access on objects. This type is not an integer, but can
@@ -112,6 +114,21 @@ constexpr byte& operator&=(byte& lhs, byte rhs) {
 constexpr byte& operator^=(byte& lhs, byte rhs) {
   return lhs = lhs ^ rhs;
 }
+
+
+/**
+ * Compute the address of `obj`, even in the presence of overloaded `operator&`.
+ */
+template <typename T>
+constexpr T* addressof(T& obj) {
+  return __builtin_addressof(obj);
+}
+
+/**
+ * Ensure that rvalues cannot have their address taken.
+ */
+template <typename T>
+const T* addressof(const T&&) = delete;
 
 } // namespace psl
 

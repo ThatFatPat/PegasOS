@@ -1,0 +1,9 @@
+# bochsrc
+#
+megs: 128
+#
+cpu: model=corei7_haswell_4770
+#
+ata0-master: type=cdrom, path=./build/iso/PegasOS.iso, status=inserted
+#
+boot: cdrom
