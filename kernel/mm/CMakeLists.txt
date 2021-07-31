@@ -1,1 +1,1 @@
-target_sources(kernel PRIVATE kern_layout.cpp phys.cpp bootheap.cpp)
+target_sources(kernel PRIVATE kern_layout.cpp phys.cpp)

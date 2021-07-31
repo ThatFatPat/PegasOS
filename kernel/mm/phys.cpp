@@ -5,13 +5,13 @@
  */
 
 #include "mm/kern_layout.h"
-#include <cstdint>
 #include <mm/phys.h>
 #include <psl/numeric.h>
 
 #include <arch/kernel_vspace.h>
 
 #include <stddef.h>
+#include <stdint.h>
 
 namespace mm {
 namespace {

@@ -1,14 +1,17 @@
 #include <mm/kern_layout.h>
 
+extern "C" {
+char _kern_phys_start;
+char _kern_phys_end;
+}
+
 namespace mm {
 
 phys_addr_t get_kernel_base() {
-  extern char _kern_phys_start;
   return reinterpret_cast<phys_addr_t>(&_kern_phys_start);
 }
 
 phys_addr_t get_kernel_end() {
-  extern char _kern_phys_end;
   return reinterpret_cast<phys_addr_t>(&_kern_phys_end);
 }
 
